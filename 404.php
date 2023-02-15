@@ -3,13 +3,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>404 - PAGE NOT FOUND</title>
+	<title>LINK NOT FOUND</title>
 </head>
 <body>
-	<div class="container text-center">
-		404 NOT FOUND
-		<br>
-		<a href="/">Go back</a>
-	</div>
+	PAGE NOT FOUND
+	<h1 class="text-center"><a href="<?php echo home_url();?>"> GO HOME</a></h1>
 </body>
 </html>
