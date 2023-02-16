@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: Administrator dashboard
+Template Name: Student dashboard
 */
 ?>
 
@@ -11,7 +11,7 @@ Template Name: Administrator dashboard
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Administrator | unitedPayment</title>
+    <title>Students | unitedPayment</title>
 
 
     <!-- Favicons -->

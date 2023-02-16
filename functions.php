@@ -1,16 +1,17 @@
 <?php
 
 function voctech_update_custom_roles() {
-    if ( get_option( 'custom_roles_version' ) < 1 ) {
-    	voctech_add_table_quotation_request();
-    	voctech_add_table_jobs();
-        add_role( 'client', 'Client', array( 'read' => true, 'level_0' => true ) );
-        add_role( 'artisan', 'Artisan', array( 'read' => true, 'level_0' => true ) );
+    if ( get_option( 'custom_roles_version' ) == 1 ) {
+    	//voctech_add_table_quotation_request();
+    	//voctech_add_table_jobs();
+        add_role( 'busery', 'Bursery', array( 'read' => true, 'level_0' => true ) );
+        add_role( 'collector', 'Collector', array( 'read' => true, 'level_0' => true ) );
+        add_role( 'student', 'Student', array( 'read' => true, 'level_0' => true ) );
         update_option( 'custom_roles_version', 1 );
     }
 
     add_theme_support( 'post-thumbnails', array( 'training', 'store' ) ); // Posts and Movies
-    voctech_add_category();
+    //voctech_add_category();
 
 }
 add_action( 'init', 'voctech_update_custom_roles' );

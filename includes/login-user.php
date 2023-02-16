@@ -1,7 +1,6 @@
-<section class="container">
+<section class="container-fluid">
         <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-6 bg-light p-4 border">
+            <div class="col-md-12 bg-light p-4 border">
                 <div class="alert alert-danger " style="display: none;" id="err-container">
                     <p id="err-msg"></p>
                 </div>
@@ -25,8 +24,8 @@
 
                     <div class="col-md-12">
                         <div class="form-check m-2">
-                            <input class="form-check-input" type="checkbox" name="remember_me" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">Remember me</label>
+                            <!-- <input class="form-check-input" type="checkbox" name="remember_me" id="flexCheckDefault"> -->
+                            <!-- <label class="form-check-label" for="flexCheckDefault">Remember me</label> -->
                         </div>
                     </div>
 
@@ -75,8 +74,8 @@
                         $('#err-container').hide();
                         $('#user-login').hide();
                         // console.log(res.data)
-                        if(res.data === 'client') window.location = 'client-dashboard'
-                        else if(res.data === 'artisan') window.location = 'artisan-dashboard'
+                        if(res.data === 'student') window.location = 'student-dashboard'
+                        else if(res.data === 'collector') window.location = 'collector-dashboard'
                         else if(res.data === 'administrator') window.location = 'administrator-dashboard'
                     }else{
                     scrollTo(0,0)
