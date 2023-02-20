@@ -67,39 +67,58 @@ Template Name: Collector dashboard
         <div class="payment d-flex flex-column gap-5 col-9">
             <div class="activities row gap-5">
                 <div class="item col pt-2">
-                    <i class="bx bx-up-arrow"></i>
-                    <p>Faculty Dues Owned</p>
-                    <p>
-                        You have not paid your faculty dues for this session, please do so in orde to be able to print
-                        and sign clearance
-                    </p>
+                    <a href="collector-manage-due" class="text-decoration-none">
+                        <i class="bx bx-plus"></i>
+                        <p>Add fee/due</p>
+                    </a>
                 </div>
                 <div class="item col p-2">
                     <i class="bx bx-home-smile"></i>
                     <p>Accomodmodation</p>
-                    <p>
-                        Payment was successful; Go yo Student Affairs office for acknowledgement and collect your
-                        accommodation ballot
-                    </p>
                 </div>
                 <div class="item col pt-2">
                     <i class="bx bx-registered"></i>
                     <p>Late Registration For 2022/2023</p>
-                    <p>
-                        Late Registration attracts fee penalty
-                    </p>
                 </div>
                 <div class="item col pt-2">
                     <i class="bx bxs-school"></i>
                     <p>Departmental Dues Owned</p>
-                    <p>
-                        You have not paid your faculty dues for this session, please do so in order to be able to print
-                        and sign clearance
-                    </p>
                 </div>
             </div>
             <div class="record-table">
-                <table class="table">
+            <?php
+        if( is_user_logged_in() ) {
+               $current_user   = wp_get_current_user();
+               $role_name      = $current_user->roles[0];
+
+                if ( 'collector' !== $role_name ) {
+                   //echo '<script>window.location="'.wp_logout_url().'"</script>';
+                   echo $role_name;
+                   die();
+                }
+
+                $page = htmlentities($_GET['p'] ?? '');
+
+                $collectorMeta = get_user_meta($current_user->ID);
+
+                if($collectorMeta['activited'][0] === '2'){
+                  echo ' <div class="grey-area-user"><div class="row"><div class="col-lg-2"></div><div class="col-lg-10 alert alert-danger text-center p-5">Acount banned. Please contact the admin for more details</div></div></div>';
+                }else if($collectorMeta['activited'][0] === '0'){
+                  echo ' <div class="grey-area-user"><div class="row"><div class="col-lg-2"></div><div class="col-lg-10 alert alert-info p-5 text-center">Acount not yet activated. Please check your email'.$current_user->email.' for confirmation mail.</div></div></div>';
+                }else if($collectorMeta['activited'][0] === '1'){
+                  if(false === get_template_part('includes/pages/collector', $page)){
+                    get_template_part('includes/pages/collector', 'dashboard');
+                  }
+                }
+    
+
+         
+          } else {
+               echo '<script>window.location="'.home_url().'"</script>';
+               die();
+          }
+    ?>
+                <!--table class="table">
                     <thead>
                         <tr>
                             <th>payment for;</th>
@@ -188,7 +207,7 @@ Template Name: Collector dashboard
                         </tr>
 
                     </tbody>
-                </table>
+                </table-->
             </div>
         </div>
     </div>

@@ -1,14 +1,61 @@
 <?php
 
+function voctech_create_custom_pages() {
+    $pages = array(
+        array(
+            'title' => 'Sign in',
+            'slug' => 'sign-in',
+            'template' => 'template-sign-in.php'
+        ),
+        array(
+            'title' => 'Collector dashboard',
+            'slug' => 'collector-dashboard',
+            'template' => 'template-collector-dashboard.php'
+        ),
+        array(
+            'title' => 'Student dashboard',
+            'slug' => 'student-dashboard',
+            'template' => 'template-student-dashboard.php'
+		),
+		array(
+            'title' => 'Administrator dashboard',
+            'slug' => 'administrator-dashboard',
+            'template' => 'template-administrator-dashboard.php'
+        )
+    );
+
+    foreach ($pages as $page) {
+        $existing_page = get_page_by_path($page['slug']);
+
+        if ($existing_page) {
+            continue;
+        }
+
+        $page_id = wp_insert_post(array(
+            'post_title' => $page['title'],
+            'post_name' => $page['slug'],
+            'post_type' => 'page',
+            'post_status' => 'publish',
+        ));
+
+        if ($page_id && $page['template']) {
+            update_post_meta($page_id, '_wp_page_template', $page['template']);
+        }
+    }
+}
+
+
 function voctech_update_custom_roles() {
-    if ( get_option( 'custom_roles_version' ) == 1 ) {
+    if ( get_option( 'custom_roles_version' ) < 1 ) {
     	//voctech_add_table_quotation_request();
     	//voctech_add_table_jobs();
-        add_role( 'busery', 'Bursery', array( 'read' => true, 'level_0' => true ) );
+		voctech_create_custom_pages();
+        add_role( 'busary', 'Bursary', array( 'read' => true, 'level_0' => true ) );
         add_role( 'collector', 'Collector', array( 'read' => true, 'level_0' => true ) );
         add_role( 'student', 'Student', array( 'read' => true, 'level_0' => true ) );
         update_option( 'custom_roles_version', 1 );
     }
+	
 
     add_theme_support( 'post-thumbnails', array( 'training', 'store' ) ); // Posts and Movies
     //voctech_add_category();
