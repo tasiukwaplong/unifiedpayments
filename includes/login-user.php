@@ -15,7 +15,7 @@
                         <h2 class="text-center">LOG IN TO DASHBOARD</h2>
                     </div>
                     <div class="col-md-12">
-                        <input placeholder="Enter email" type="email" name="email" class="form-control m-2" minlength="5" maxlength="40" required>
+                        <input placeholder="Enter email/username/matric" type="text" name="email" class="form-control m-2" minlength="5" maxlength="40" required>
                     </div>
 
                     <div class="col-md-12">

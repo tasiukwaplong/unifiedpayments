@@ -564,9 +564,9 @@ function voctech_login_user(){
 		$errors[] = 'Password field empty';
 	}
 
-	if(!isset($formData['email']) || !filter_var($formData['email'], FILTER_VALIDATE_EMAIL)){
-		$errors[] = 'Email format not correct';
-	}
+	// if(!isset($formData['email']) || !filter_var($formData['email'], FILTER_VALIDATE_EMAIL)){
+	// 	$errors[] = 'Email format not correct';
+	// }
 
 	if(count($errors) >= 1){
 		return wp_send_json_error($errors);

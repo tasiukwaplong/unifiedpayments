@@ -45,7 +45,8 @@ Template Name: Collector dashboard
             </form>
             <div class="notify">
                 <a href="/logout" title='/cart' class='text-success'><i class="bx bx-cart  "></i></a>
-                <a href="/logout" title='Logout' class='text-danger'><i class="bx bx-power-off"></i></a>
+                <a href="<?php echo wp_logout_url(home_url()) ?>" class='text-danger'><i class="bx bx-power-off"></i></a>
+                
             </div>
         </div>
     </nav>
