@@ -48,7 +48,6 @@ function voctech_create_custom_pages() {
 function voctech_update_custom_roles() {
     if ( get_option( 'custom_roles_version' ) < 1 ) {
     	//voctech_add_table_quotation_request();
-    	//voctech_add_table_jobs();
 		voctech_create_custom_pages();
         add_role( 'busary', 'Bursary', array( 'read' => true, 'level_0' => true ) );
         add_role( 'collector', 'Collector', array( 'read' => true, 'level_0' => true ) );
@@ -56,15 +55,73 @@ function voctech_update_custom_roles() {
         update_option( 'custom_roles_version', 1 );
     }
 	
-
-    add_theme_support( 'post-thumbnails', array( 'training', 'store' ) ); // Posts and Movies
+    // add_theme_support( 'post-thumbnails', array( 'training', 'store' ) ); // Posts and Movies
     //voctech_add_category();
 
 }
 add_action( 'init', 'voctech_update_custom_roles' );
 
 
+// ADD USER - COLLECTOR 
+add_action('wp_ajax_register-collector','voctech_register_artisan');
+add_action('wp_ajax_nopriv_register-collector','voctech_register_artisan');
+function voctech_register_artisan(){
+	$formData = [];
+	wp_parse_str($_POST['register-collector'], $formData);
+	$errors = [];
 
+	// FORM VALIDATION STARTS
+
+	if(!isset($formData['email']) || !filter_var($formData['email'], FILTER_VALIDATE_EMAIL)){
+		$errors[] = 'Email format not correct';
+	}
+
+	if(!isset($formData['password']) || strlen($formData['password']) <= 1){
+		$errors[] = 'Password is empty. Please provide a valid password';
+	}
+
+	if(!isset($formData['fname']) || strlen($formData['fname']) <= 1){
+		$errors[] = 'First name cannot be empty';
+	}
+
+	if(!isset($formData['lname']) || strlen($formData['lname']) <= 1){
+		$errors[] = 'Last name cannot be empty';
+	}
+
+	if(!isset($formData['name']) || strlen($formData['name']) <= 1){
+		$errors[] = 'Collection name cannot be empty. Provide a valid and official name of collector';
+	}
+
+	if(count($errors) >= 1){
+		return wp_send_json_error($errors);
+	}
+
+	// FORM VALIDATION ENDS
+	$userdata = array(
+		'user_pass' => $formData['password'],
+		'user_login' => $formData['email'],
+		'user_nicename' => $formData['name'],
+		'user_email'=> $formData['email'],
+		'display_name'=> $formData['name'],
+		'first_name'=> $formData['fname'],
+		'last_name'=> $formData['lname'],
+		'role' => 'collector'
+	);
+
+	try{
+
+		$user_id = wp_insert_user( $userdata ) ;
+		// On success.
+		if ( ! is_wp_error( $user_id ) ) {
+		    wp_send_json_success(['user_id'=>$user_id]);
+		}else{
+		    wp_send_json_error(['Unable to create user account. Please try again', $user_id->get_error_message()]);
+		}
+	}catch(Exception $e){
+		wp_send_json_error($e);
+	}
+}
+// ====================
 
 add_action('wp_ajax_register','voctech_already_registered_user');
 function voctech_already_registered_user(){
@@ -139,82 +196,11 @@ function voctech_register_user(){
 
 }
 
-// ADD USER - ARTISAN 
-add_action('wp_ajax_register-artisan','voctech_register_artisan');
-add_action('wp_ajax_nopriv_register-artisan','voctech_register_artisan');
-function voctech_register_artisan(){
-	// add new artisan
-	// $data = json_encode($_POST);
-	// return wp_send_json_success($data);
 
-	$formData = [];
-	wp_parse_str($_POST['register-artisan'], $formData);
-	$errors = [];
-
-	// FORM VALIDATION STARTS
-	if(!isset($formData['password1']) || !isset($formData['password2']) ){
-		$errors[] = 'Password field empty';
-	}
-
-	if($formData['password1'] !== $formData['password2']){
-		$errors[] = 'Passwords do not match';
-	}
-
-	if(!isset($formData['email']) || !filter_var($formData['email'], FILTER_VALIDATE_EMAIL)){
-		$errors[] = 'Email format not correct';
-	}
-
-	if(count($errors) >= 1){
-		return wp_send_json_error($errors);
-	}
-	// FORM VALIDATION ENDS
-
-	$userdata = array(
-		'user_pass' => $formData['password1'],
-		'user_login' => $formData['email'],
-		'user_nicename' => $formData['name'],
-		'user_email'=> $formData['email'],
-		'display_name'=> $formData['name'],
-		'first_name'=> explode(' ',$formData['name'])[0] ?? '',
-		'last_name'=> explode(' ',$formData['name'])[1] ?? '',
-		'role' => 'artisan',
-		'meta_input'=>[
-			'activited'=>'0',
-			'phone' => $formData['phone'],
-			'business_name' => $formData['business_name'],
-			'business_state' => $formData['business_state'],
-			'business_lga' => $formData['business_lga'],
-			'available_balance'=>0,
-			'business_type' => $formData['business_type'],
-			'business_sub_category' => $formData['business_sub_category']
-		]
-	);
-
-	try{
-
-		$user_id = wp_insert_user( $userdata ) ;
-		// On success.
-		if ( ! is_wp_error( $user_id ) ) {
-			$token = voctech_hash_unhash($formData['email'].'=|||='.$formData['phone'], 'encrypt');
-
-			voctech_send_email([
-				'email' => $formData['email'],
-				'subject' => '[ACTION REQUIRED] Verify email',
-				'message' => 'Hello '.$formData['business_name'].' <br> Click on this link to verify your email address: '.home_url().'/verify/?token='.$token,
-			]);
-
-		    wp_send_json_success(['user_id'=>$user_id]);
-		}else{
-		    wp_send_json_error(['Unable to create user account. Please try again', $user_id->get_error_message()]);
-		}
-	}catch(Exception $e){
-		wp_send_json_error($e);
-	}
-}
 
 // REQUEST SERVICE/JOB
 add_action('wp_ajax_quotation-request','voctech_quotation_request');
-// add_action('wp_ajax_nopriv_register-artisan','voctech_quotation_request');
+// add_action('wp_ajax_nopriv_register-collector','voctech_quotation_request');
 function voctech_quotation_request(){
 	// Submit quotation request
 
