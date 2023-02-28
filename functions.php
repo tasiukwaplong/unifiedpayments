@@ -105,7 +105,10 @@ function voctech_register_artisan(){
 		'display_name'=> $formData['name'],
 		'first_name'=> $formData['fname'],
 		'last_name'=> $formData['lname'],
-		'role' => 'collector'
+		'role' => 'collector',
+		'meta_input'=>[
+			'balance' => 0
+		]
 	);
 
 	try{
@@ -116,6 +119,89 @@ function voctech_register_artisan(){
 		    wp_send_json_success(['user_id'=>$user_id]);
 		}else{
 		    wp_send_json_error(['Unable to create user account. Please try again', $user_id->get_error_message()]);
+		}
+	}catch(Exception $e){
+		wp_send_json_error($e);
+	}
+}
+
+
+// ADD USER - STUDENT 
+add_action('wp_ajax_register-student','voctech_register_student');
+add_action('wp_ajax_nopriv_register-student','voctech_register_student');
+function voctech_register_student(){
+	$formData = [];
+	wp_parse_str($_POST['register-student'], $formData);
+	$errors = [];
+
+	// FORM VALIDATION STARTS
+	if(!isset($formData['matric']) || strlen($formData['matric']) <= 1){
+		$errors[] = 'Matric number is empty. Please provide a matric password';
+	}
+	if(!isset($formData['email']) || !filter_var($formData['email'], FILTER_VALIDATE_EMAIL)){
+			$errors[] = 'Email format not correct';
+	}
+	if(!isset($formData['fname']) || strlen($formData['fname']) <= 1){
+		$errors[] = 'First name is empty. Please provide a valid First name';
+	}
+	if(!isset($formData['lname']) || strlen($formData['lname']) <= 1){
+		$errors[] = 'Last name is empty. Please provide a valid Last name';
+	}
+	if(!isset($formData['state']) || strlen($formData['state']) <= 1){
+		$errors[] = 'State of origin is empty. Please provide a valid State of origin';
+	}
+	if(!isset($formData['lga']) || strlen($formData['lga']) <= 1){
+		$errors[] = 'Local Government area is empty. Please provide a valid Local Government area';
+	}
+	if(!isset($formData['faculty']) || strlen($formData['faculty']) <= 1){
+		$errors[] = 'Faculty is empty. Please provide a valid Faculty';
+	}
+	if(!isset($formData['department']) || strlen($formData['department']) <= 1){
+		$errors[] = 'Department is empty. Please provide a valid department';
+	}
+	if(!isset($formData['level']) || strlen($formData['level']) <= 1){
+		$errors[] = 'Level is empty. Please provide a valid Level';
+	}
+	if(!isset($formData['faith']) || strlen($formData['faith']) <= 1){
+		$errors[] = 'Faith is empty. Please provide a valid Faith';
+	}
+	if(!isset($formData['password']) || strlen($formData['password']) <= 1){
+		$errors[] = 'Password is empty. Please provide a valid password';
+	}
+
+	if(count($errors) >= 1){
+		return wp_send_json_error($errors);
+	}
+
+	// FORM VALIDATION ENDS
+	$userdata = array(
+		'user_pass' => $formData['password'],
+		'user_login' => $formData['matric'],
+		'user_nicename' => $formData['name'],
+		'user_email'=> $formData['email'],
+		'display_name'=> $formData['fname']." ".$formData['lname'],
+		'first_name'=> $formData['fname'],
+		'last_name'=> $formData['lname'],
+		'role' => 'student',
+		'meta_input'=>[
+			'matric' => $formData['matric'],
+			'state' => $formData['state'],
+			'lga' => $formData['lga'],
+			'faculty' => $formData['faculty'],
+			'department' => $formData['department'],
+			'level' => $formData['level'],
+			'faith' => $formData['faith'],
+		]
+	);
+
+	try{
+
+		$user_id = wp_insert_user( $userdata ) ;
+		// On success.
+		if ( ! is_wp_error( $user_id ) ) {
+		    wp_send_json_success(['user_id'=>$user_id]);
+		}else{
+		    wp_send_json_error(['Unable to create student account. Please try again', $user_id->get_error_message()]);
 		}
 	}catch(Exception $e){
 		wp_send_json_error($e);

@@ -17,11 +17,12 @@
         </div>
         <div class="col-md-6"></div>
     </div>
-    <table class="table area text-sm" id="artisans">
+
+    <table class="table area text-sm" id="students">
         <thead>
             <tr>
                 <th class="sp-admin" scope="col">S/N</th>
-                <th class="sp-admin" scope="col">Collector name</th>
+                <th class="sp-admin" scope="col">Matric number</th>
                 <th class="sp-admin" scope="col">Full name</th>
                 <th class="sp-admin" scope="col">Email</th>
                 <th class="sp-admin" scope="col">Date created</th>
@@ -30,19 +31,19 @@
         </thead>
         <tbody>
             <?php
-                $artisans = get_users(['role'=>'student']);
-                if(count($artisans)<=0):
-                    echo "<tr><td colspan='11'>NO Request made yet</td></tr>";
+                $students = get_users(['role'=>'student']);
+                if(count($students)<=0):
+                    echo "<tr><td colspan='6'>NO student added yet</td></tr>";
                 else:
-                    foreach ($artisans as $indx => $artisan):
-                    $artisanMeta = get_user_meta($artisan->ID);
+                    foreach ($students as $indx => $student):
+                    $studentMeta = get_user_meta($student->ID);
                 ?>
                     <tr>
                         <td><?php echo ($indx+1);?></td>                        
-                        <td><?php echo $artisan->display_name; ?></td>
-                        <td><?php echo $artisan->first_name; ?>&nbsp;<?php echo $artisan->last_name; ?></td>
-                        <td><?php echo $artisan->user_email; ?></td>
-                        <td><?php echo $artisan->user_registered; ?></td>
+                        <td><?php echo $studentMeta['matric'][0]; ?></td>
+                        <td><?php echo $student->first_name; ?>&nbsp;<?php echo $student->last_name; ?></td>
+                        <td><?php echo $student->user_email; ?></td>
+                        <td><?php echo $student->user_registered; ?></td>
                        
                         <td class='btn border border-sm'>
                             Edit|Delete
@@ -59,13 +60,16 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Add new collector</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Add new student</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="collector-registration">
+      <form id="student-registration">
       <div class="modal-body">
+            <label class="mt-2" for="matric">Matriculation number</label>
+            <input name="matric" id="matric" type="text" placeholder="Enter student matric number" class="form-control" required>
+
             <label class="mt-2" for="email">Email</label>
             <input name="email" id="email" type="text" placeholder="Enter email address" class="form-control" required>
 
@@ -74,6 +78,18 @@
 
             <label class="mt-2" for="lname">Last name</label>
             <input type="text" class="form-control" name="lname" id="lname" required>
+
+            <label class="mt-2" for="state">State of origin</label>
+            <select name="state" id="state" class="form-control" required>
+                <option value="">--Select state of origin--</option>
+                <option value="Nasarawa">Nasarawa</option>
+            </select>
+
+            <label class="mt-2" for="lga">Local Government or origin</label>
+            <select name="lga" id="faculty" class="form-control" required>
+                <option value="">--Select lga--</option>
+                <option value="Lafia">Lafia</option>
+            </select>
 
             <label class="mt-2" for="faculty">Faculty</label>
             <select name="faculty" id="faculty" class="form-control" required>
@@ -98,6 +114,14 @@
                 <option value="600">600</option>
             </select>
 
+            <label class="mt-2" for="faith">Faith</label>
+            <select name="faith" id="faith" class="form-control" required>
+                <option value="">--Select student faith--</option>
+                <option value="Islam">Islam</option>
+                <option value="Christianity">CHristianity</option>
+                <option value="Other">Other</option>
+            </select>
+
             <label class="mt-2" for="password">Password</label>
             <input type="password" class="form-control mb-2" name="password" id="password" required>
             <!-- message starts -->
@@ -106,14 +130,14 @@
             </div>
 
             <div class="alert alert-success" style="display: none;" id="success-container">
-                    Artisan registration successful. <br>
+                    Student registration successful. <br>
                     
             </div>
             <!-- message ends -->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <input type="submit" value="Add collector" id="btn-register" name="Submit" class=" btn btn-success">
+        <input type="submit" value="Add student" id="btn-register" name="Submit" class=" btn btn-success">
         <input type="button" id="btn-processing" value="Processing..." class="form-control btn btn-success m-2 " style="display: none;">
         <!-- <button type="submit" class="btn btn-success">Add collector</button> -->
       </div>
@@ -128,14 +152,14 @@
 <script type="text/javascript">
    
    //register new collector
-$('#collector-registration').submit(function(e){
+$('#student-registration').submit(function(e){
     // add a new user - role:collector
     e.preventDefault();
     var endpoint = '<?php echo admin_url('admin-ajax.php'); ?>';
-    var form = $('#collector-registration').serialize();
+    var form = $('#student-registration').serialize();
     var formData = new FormData;
-    formData.append('action', 'register-collector');
-    formData.append('register-collector', form);
+    formData.append('action', 'register-student');
+    formData.append('register-student', form);
 
     $.ajax(endpoint, {
         type: 'POST',
@@ -151,7 +175,7 @@ $('#collector-registration').submit(function(e){
                 setTimeout(function() {
                     location.reload();
                 }, 1200);
-                $('#collector-registration').hide();
+                $('#student-registration').hide();
             }else{
                 // console.log(res)
                 $('#err-container').show();
