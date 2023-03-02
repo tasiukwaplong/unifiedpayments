@@ -29,7 +29,7 @@
             <?php
                 $artisans = get_users(['role'=>'collector']);
                 if(count($artisans)<=0):
-                    echo "<tr><td colspan='11'>NO Request made yet</td></tr>";
+                    echo "<tr><td colspan='11'>No collector added yet</td></tr>";
                 else:
                     foreach ($artisans as $indx => $artisan):
                     $artisanMeta = get_user_meta($artisan->ID);

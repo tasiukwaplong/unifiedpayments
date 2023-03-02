@@ -1,8 +1,18 @@
+<?php
+       $current_user = wp_get_current_user();
+       $role_name      = $current_user->roles[0];
+       $userMeta = get_user_meta($current_user->ID);
+?>
 <div class="payment d-flex flex-column gap-5 col-9">
+    <div class="row">
+        <div class="col-12 text-center h3 text-uppercase pt-3">
+            <b><?php echo $current_user->display_name;?></b>
+        </div>
+    </div>
         <div class="activities row gap-5 text-center">
                 <div class="item col pt-2 well well-sm " style="border-left: 10px solid green;">
                     <div class="h3 p-5 pb-0">
-                        &#8358;12,000
+                        &#8358;<?php echo $userMeta['balance'][0];?>
                     </div>
                     <small class="small pt-0 mt-0">
                         <em>Total money collected</em>
