@@ -71,7 +71,7 @@ Template Name: Administrator dashboard
                 <li><a class=" text-decoration-none" href="/administrator-dashboard">Dashboard</a></li>
                 <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'manage-collectors' ) );?>">Manage collectors</a></li>
                 <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'manage-students' ) );?>">Manage Students</a></li>
-                <li><a class=" text-decoration-none" href="">Manage Fees</a></li>
+                <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'manage-feesdues' ) );?>">Manage Fees</a></li>
                 <li><a class=" text-decoration-none" href="">Manage Payments</a></li>
                 <li><a class=" text-decoration-none" href="">Settings</a></li>
             </div>

@@ -152,6 +152,9 @@ function voctech_register_student(){
 	if(!isset($formData['lga']) || strlen($formData['lga']) <= 1){
 		$errors[] = 'Local Government area is empty. Please provide a valid Local Government area';
 	}
+	if(!isset($formData['gender']) || strlen($formData['gender']) <= 1){
+		$errors[] = 'Gender cannot be empty. Please select a gender';
+	}
 	if(!isset($formData['faculty']) || strlen($formData['faculty']) <= 1){
 		$errors[] = 'Faculty is empty. Please provide a valid Faculty';
 	}
@@ -188,6 +191,7 @@ function voctech_register_student(){
 			'lga' => $formData['lga'],
 			'faculty' => $formData['faculty'],
 			'department' => $formData['department'],
+			'gender' => $formData['gender'],
 			'level' => $formData['level'],
 			'faith' => $formData['faith'],
 		]
@@ -264,6 +268,64 @@ function voctech_add_feesdues(){
 	}
 }
 
+// UPDATE FEES OR DUES
+add_action('wp_ajax_update-feesdues','voctech_update_feesdues');
+function voctech_update_feesdues(){
+	$formData = [];
+	wp_parse_str($_POST['update-feesdues'], $formData);
+	$errors = [];
+
+	// FORM VALIDATION STARTS
+	if(!isset($formData['id']) || strlen($formData['id']) < 1){
+		$errors[] = 'Fee ID is empty. Please select a valid fee';
+	}
+	
+	if(!isset($formData['priority']) || strlen($formData['priority']) < 1){
+		$errors[] = 'Priority level is empty. Please provide a valid priority level';
+	}
+
+	if(count($errors) >= 1){
+		return wp_send_json_error($errors);
+	}
+
+	// FORM VALIDATION ENDS
+	$feesduesData = array(
+		'priority_' => $formData['priority'],
+		'status_' => ( $formData['priority'] === '0') ? '0' : '1',
+	);
+
+	try{
+		global $wpdb;
+		$table = $wpdb->prefix.'fees_dues';
+
+		// On success.
+		if ($wpdb->update($table,$feesduesData,['id'=> $formData['id']]) ) {
+		    wp_send_json_success('Status updated successfully. You will redirected in 5 secs');
+		}else{
+		    wp_send_json_error(['Unable to complete request. Try again']);
+		}
+	}catch(Exception $e){
+		wp_send_json_error($e);
+	}
+}
+
+// DELETE FEES/DUES
+function voctech_delete_feesdues($id){
+	try{
+		global $wpdb;
+		$table = $wpdb->prefix.'fees_dues';
+
+		// On success.
+		if ($wpdb->delete($table,['id'=> $id]) ) {
+		    return 'Record deleted successfully. <br> You will be redirected in 5 secs..';
+		}else{
+		    return 'Unable to delete record. <br> You will be redirected in 5 secs..';
+		}
+	}catch(Exception $e){
+		return 'Unable to delete record. Server error.  <br> You will be redirected in 5 secs..';
+	}
+}
+
 //GET LIST OF fees/dues
 function voctech_get_feesdues($data = []){
 	// Submit fees/dues
@@ -273,8 +335,12 @@ function voctech_get_feesdues($data = []){
 	try{
 		global $wpdb;
 		$table = $wpdb->prefix.'fees_dues';
-		$qry = "SELECT * FROM $table WHERE collector = $collector_id ORDER BY id DESC";
-		// $qry = (isset($data['is_admin'])) ? "SELECT * FROM $table WHERE ORDER BY id DESC" : $qry;
+		
+		$qry = "SELECT * FROM $table WHERE collector = $collector_id ";
+		$qry = (isset($data['is_admin'])) ? "SELECT * FROM $table " : $qry;
+		$qry .= (isset($data['id'])) ? "WHERE id = '".$data['id']."'" : '';
+		$qry .= " ORDER BY id DESC";
+		
 		$results = $wpdb->get_results($qry);
 		if ($wpdb->last_error) {
 		    // return $wpdb->last_error;
@@ -308,6 +374,7 @@ function voctech_add_table_fees_dues(){
 	    condition5 varchar(255) NOT NULL,
 	    comment tinytext NULL,
 	    status_ varchar(10) DEFAULT '0',
+	    priority_ varchar(10) DEFAULT '0',
 		session_reason_amount varchar(255) NOT NULL UNIQUE,
 	    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

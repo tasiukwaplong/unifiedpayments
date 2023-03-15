@@ -79,6 +79,13 @@
             <label class="mt-2" for="lname">Last name</label>
             <input type="text" class="form-control" name="lname" id="lname" required>
 
+            <label class="mt-2" for="gender">Gender</label>
+            <select name="gender" id="gender" class="form-control" required>
+                <option value="">--Select student gender--</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+
             <label class="mt-2" for="state">State of origin</label>
             <select name="state" id="state" class="form-control" required>
                 <option value="">--Select state of origin--</option>

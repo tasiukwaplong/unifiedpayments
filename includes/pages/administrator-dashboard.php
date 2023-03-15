@@ -13,13 +13,13 @@
                     </a>
                 </div>
                 <div class="item col pt-2">
-                    <a href="manage-collectors" class="text-decoration-none btn border border-md shadow">
+                    <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-feesdues' ) );?>" class="text-decoration-none btn border border-md shadow">
                         <i class="bx bx-money-withdraw"></i>
                         <p>Manage Fees&nbsp;&nbsp;&nbsp;&nbsp;</p>
                     </a>
                 </div>
                 <div class="item col pt-2">
-                    <a href="manage-collectors" class="text-decoration-none btn border border-md shadow">
+                <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-payments' ) );?>" class="text-decoration-none btn border border-md shadow">
                         <i class="bx bx-wallet"></i>
                         <p>Manage Payments</p>
                     </a>
