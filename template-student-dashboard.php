@@ -3,6 +3,10 @@
 Template Name: Student dashboard
 */
 ?>
+<?php
+       $current_user = wp_get_current_user();
+       $role_name      = $current_user->roles[0];
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,8 +15,11 @@ Template Name: Student dashboard
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Students | unitedPayment</title>
-
+    <title>Student | unitedPayment</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 
     <!-- Favicons -->
     <link href="<?php echo get_template_directory_uri();?>/assets/img/favicon.png" rel="icon" />
@@ -34,7 +41,7 @@ Template Name: Student dashboard
 <body>
     <nav>
         <div class="logo">
-            <img src="<?php echo get_template_directory_uri();?>/assets/img/testimonials/testimonials-2.jpg" alt="" />
+            <img src="<?php echo get_template_directory_uri();?>/assets/img/testimonials/testimonials-2.png" alt="" />
             <p class="text-uppercase">federal university of lafia</p>
         </div>
         <div class="d-flex gap-2">
@@ -44,153 +51,55 @@ Template Name: Student dashboard
 
             </form>
             <div class="notify">
-                <a href="/logout" title='/cart' class='text-success'><i class="bx bx-cart  "></i></a>
-                <a href="/logout" title='Logout' class='text-danger'><i class="bx bx-power-off"></i></a>
+                <a href="/logout" title='Settings' class='text-dark'><i class="bx bx-cog"></i></a>
+                <a href="<?php echo wp_logout_url(home_url()) ?>" class='text-danger'><i class="bx bx-power-off"></i></a>
             </div>
         </div>
     </nav>
     <div class="container-fluid row">
         <div class="sidebar col-3 px-4">
             <div class="profile d-flex gap-3">
-                <img class="" src="<?php echo get_template_directory_uri();?>/assets/img/testimonials/testimonials-4.jpg" alt="">
+            <img src="<?php echo get_template_directory_uri();?>/assets/img/testimonials/user.png" alt="">
                 <div class="">
-                    <div class="fw-bold">Adulrazaq Sikirullah</div>
-                    <div>00000000000</div>
+                    <div class="fw-bold">
+                        <?php echo $current_user->user_email ?? '';?>
+                    </div>
+                    <div><?php echo $role_name ?? '';?></div>
                 </div>
             </div>
             <div class="dashboard-links">
-                <li><a class=" text-decoration-none" href="">Dashboard</a></li>
-                <li><a class=" text-decoration-none" href="">Payment</a></li>
-                <li><a class=" text-decoration-none" href="">Support</a></li>
+                <li><a class=" text-decoration-none" href="/student-dashboard">Dashboard</a></li>
+                <li><a class=" text-decoration-none" href="">Manage Payments</a></li>
+                <li><a class=" text-decoration-none" href="">Settings</a></li>
             </div>
         </div>
-        <div class="payment d-flex flex-column gap-5 col-9">
-            <div class="activities row gap-5">
-                <div class="item col pt-2">
-                    <i class="bx bx-up-arrow"></i>
-                    <p>Faculty Dues Owned</p>
-                    <p>
-                        You have not paid your faculty dues for this session, please do so in orde to be able to print
-                        and sign clearance
-                    </p>
-                </div>
-                <div class="item col p-2">
-                    <i class="bx bx-home-smile"></i>
-                    <p>Accomodmodation</p>
-                    <p>
-                        Payment was successful; Go yo Student Affairs office for acknowledgement and collect your
-                        accommodation ballot
-                    </p>
-                </div>
-                <div class="item col pt-2">
-                    <i class="bx bx-registered"></i>
-                    <p>Late Registration For 2022/2023</p>
-                    <p>
-                        Late Registration attracts fee penalty
-                    </p>
-                </div>
-                <div class="item col pt-2">
-                    <i class="bx bxs-school"></i>
-                    <p>Departmental Dues Owned</p>
-                    <p>
-                        You have not paid your faculty dues for this session, please do so in order to be able to print
-                        and sign clearance
-                    </p>
-                </div>
-            </div>
-            <div class="record-table">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>payment for;</th>
-                            <th>RRR</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>undergratuate school charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="error">error</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
+        <?php
+        if( is_user_logged_in() ) {
+               $current_user   = wp_get_current_user();
+               $role_name      = $current_user->roles[0];
 
-                        </tr>
-                        <tr>
-                            <td>GST Charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="succes">succes</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
+                if ( 'student' !== $role_name ) {
+                    echo '<div class="payment d-flex flex-column gap-5 col-9">
+                    <div class="activities row gap-5">
+                        <div class="item col pt-2">';
+                    echo '<div class="flex-d">CANNOT GRANT ACCESS !! <hr>';
+                    echo '<a href="'.wp_logout_url(home_url()).'">Go back to login page</a> </div>';
+                    echo '</div></div></div>';
+                   die();
+                }
 
-                        </tr>
-                        <tr>
-                            <td>ESP Charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="error">error</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
+                $page = htmlentities($_GET['p'] ?? '');
 
-                        </tr>
-                        <tr>
-                            <td>ID Card Replacement</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="succes">succes</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
-
-                        </tr>
-                        <tr>
-                            <td>Portal Charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="error">error</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
-
-                        </tr>
-                        <tr>
-                            <td>Hostel Fee</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="succes">succes</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
-
-                        </tr>
-                        <tr>
-                            <td>Departmental Registration Charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="error">error</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                $clientMeta = get_user_meta($current_user->ID);
+                if(false === get_template_part('includes/pages/student', $page)){
+                    get_template_part('includes/pages/student', 'dashboard');
+                }
+         
+          } else {
+               echo '<script>window.location="'.home_url().'"</script>';
+               die();
+          }
+    ?>
     </div>
     <!-- Vendor JS Files -->
     <script src="<?php echo get_template_directory_uri();?>/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

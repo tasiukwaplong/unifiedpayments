@@ -20,13 +20,14 @@
 
                 </div>
                 <div class="item col pt-2">
-                    <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-collectors' ) );?>" class="text-decoration-none btn border border-md shadow">
+                    <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-feesdues' ) );?>" class="text-decoration-none btn border border-md shadow">
                         <i class="bx bx-plus"></i>
                         <p>Add fees/dues</p>
                     </a>
                 </div>
                 <div class="item col p-2">
-                    <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-students' ) );?>" class="text-decoration-none btn border border-md shadow">
+                    
+                <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-students' ) );?>" class="text-decoration-none btn border border-md shadow">
                         <i class="bx bx-money"></i>
                         <p>Manage Payments</p>
                     </a>
