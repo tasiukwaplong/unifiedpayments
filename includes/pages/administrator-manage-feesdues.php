@@ -152,12 +152,12 @@
                                 if($fd->status_ == '0'): 
                         ?>
                             <tr>
-                                <td><?php print_r(++$counter);?></td>
-                                <td><?php print_r($fd->ref);?></td>
-                                <td><?php print_r($fd->reason);?></td>
-                                <td>&#8358;<?php print_r($fd->amount);?></td>
-                                <td><?php print_r($fd->reason);?></td>
-                                <td><?php print_r($fd->created_at);?></td>
+                                <td><?php echo ++$counter;?></td>
+                                <td><?php echo $fd->ref;?></td>
+                                <td><?php echo $fd->reason;?></td>
+                                <td>&#8358;<?php echo $fd->amount;?></td>
+                                <td><?php echo $fd->reason;?></td>
+                                <td><?php echo $fd->created_at;?></td>
                                 <td>
                                     <a href="/administrator-dashboard/?p=manage-feesdues&id=<?php print_r($fd->id);?>" class="btn btn-primary">Edit</a>
                                     <button type="button" onclick="deleteFeeDue(<?php print_r($fd->id);?>)"  class="btn btn-danger">Delete</a>

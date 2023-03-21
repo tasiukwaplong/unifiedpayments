@@ -386,6 +386,44 @@ function voctech_add_table_fees_dues(){
 	dbDelta( $sql );
 }
 
+
+// work on fees to be paid
+function voctech_check_condition($studentDetails, $feesDuesData){
+	$feesToPay = [
+		'level1' => [],
+		'level2' => [],
+		'level3' => []
+	];
+
+	foreach($feesDuesData as $indx => $fdd){
+		if($fdd->priority_ === '0' || $fdd->priority_ === '0' ) break;
+		
+		if(
+			isset($studentDetails[$fdd->condition1]) ||
+			isset($studentDetails[$fdd->condition2]) ||
+			isset($studentDetails[$fdd->condition3]) ||
+			isset($studentDetails[$fdd->condition4]) ||
+			isset($studentDetails[$fdd->condition5]) 
+		){
+			// found a condition that mateches that payment
+			array_push($feesToPay['level'.$fdd->priority_], [
+				$fdd->session_reason_amount => [
+				'ref'=>$fdd->ref,
+				'collector'=>$fdd->collector,
+				'session'=>$fdd->session_,
+				'amount'=>$fdd->amount,
+				'reason'=>$fdd->reason,
+				'comment'=>$fdd->comment,
+				'status_'=>$fdd->status_,
+				'priority_'=>$fdd->priority_
+			]]);
+		}
+	}
+
+	return $feesToPay;
+	
+  }
+
 // ====================
 
 add_action('wp_ajax_register','voctech_already_registered_user');
