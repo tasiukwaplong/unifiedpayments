@@ -396,14 +396,15 @@ function voctech_check_condition($studentDetails, $feesDuesData){
 	];
 
 	foreach($feesDuesData as $indx => $fdd){
-		if($fdd->priority_ === '0' || $fdd->priority_ === '0' ) break;
+		// if($fdd->priority_ === '0' || $fdd->priority_ === '0' ) continue;
 		
 		if(
-			isset($studentDetails[$fdd->condition1]) ||
+			$fdd->priority_ !== '0' &&
+			(isset($studentDetails[$fdd->condition1]) ||
 			isset($studentDetails[$fdd->condition2]) ||
 			isset($studentDetails[$fdd->condition3]) ||
 			isset($studentDetails[$fdd->condition4]) ||
-			isset($studentDetails[$fdd->condition5]) 
+			isset($studentDetails[$fdd->condition5])) 
 		){
 			// found a condition that mateches that payment
 			array_push($feesToPay['level'.$fdd->priority_], [

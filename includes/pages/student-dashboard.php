@@ -16,6 +16,9 @@
 
         $feesToPay = voctech_check_condition($studentDetails, $feesDuesData);
         $total = 0;
+
+        $inCart = [];
+        $alreadyPaid = [];
 ?> 
 <div class="payment d-flex flex-column gap-5 col-9">
     <div class="row">
@@ -47,14 +50,20 @@
 
             <tbody>
                 <?php
-                //   print_r($feesToPay);
+                //   compulsory payments that have not been paid yet
                   $level1 = (isset($feesToPay['level1']) && count($feesToPay['level1']) >= 1) ? $feesToPay['level1'] : [];
                   if (count($level1) < 1){
                     echo "<tr><td colspan='9' class='text-center'><i>No pending payments</i></td></tr>";
                   }
-                  for ($i=0; $i < count($level1); $i++): ?>
+                  $count = 0;
+                  for ($i=0; $i < count($level1); $i++): 
+                    array_push($inCart, [
+                        array_values($level1[$i])[0]['ref'] => array_values($level1[$i])
+                    ]);
+                    //if not already paid for or priority_
+                  ?>
                     <tr>
-                        <td><?php echo ($i + 1);?></td>
+                        <td><?php echo (++$count);?></td>
                         <td><?php echo array_values($level1[$i])[0]['reason'].'/'.array_values($level1[$i])[0]['session'];?></td>
                         <td>&#8358;<?php echo array_values($level1[$i])[0]['amount'];?></td>
                         <td><?php echo array_values($level1[$i])[0]['collector'];?></td>
@@ -64,7 +73,7 @@
                         <!-- <th title="remove"><i class="btn text-danger round border border-danger bx bx-minus"></i></th> -->
                         <th title="remove"></th>
                     </tr>
-                <?php endfor;?>
+                <?php endfor; print_r($inCart);?>
 
             </tbody>
         </table>
@@ -76,112 +85,72 @@
     </div>
 
     <!-- Level 2 payments -->
-        <div class="payment-section">
+        <div class="payment-section row">
             <h4 class="mb-4">Level 2 payments</h4>
             <?php
               $level2 = (isset($feesToPay['level2']) && count($feesToPay['level2']) >= 1) ? $feesToPay['level2'] : [];
+            
               if (count($level2) < 1){
-                echo "<i>No pending payments</i>";
+                echo "<i>No payments to show here</i>";
                }
-               for ($i=0; $i < count($level2); $i++): ?>
-
-                <div class="item-container">
-                    <div class="item ">
-                        <i class="bi bi-credit-card"></i>
-                        <p class="text">undergratuate school charges</p>
-                        <p class="price">N45,500</p>
-                        <button>Add</button>
+               for ($i=0; $i < count($level2); $i++): 
+                //if not already paid for or priority has_paid(ref)
+               ?>
+               <div class="col-3">
+                    <div class="item-container">
+                        <div class="item ">
+                            <i class="bi bi-credit-card"></i>
+                            <p class="text"><?php echo array_values($level2[$i])[0]['session'].'<br>'.array_values($level2[$i])[0]['reason'];?></p>
+                            <small class="price">&#8358;<?php echo array_values($level2[$i])[0]['amount'];?></small>
+                            <button class="btn btn-success" onclick="addToTable(`<?php echo array_values($level2[$i])[0]['ref'];?>`)">Add</button>
+                        </div>
                     </div>
                 </div>
                 
-            <?php endfor;?>
+            <?php  endfor;?>
             
 
         </div>
     <!-- Level 2 payments ends here-->
 
-    <div class="payment-section">
-            <h4 class="mb-4">Select invoice to pay</h4>
-            <div class="item-container">
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">undergratuate school charges</p>
-                    <p class="price">N45,500</p>
-                    <button>Add</button>
+    <!-- Level 3 payments -->
+    <div class="payment-section row">
+            <h4 class="mb-4">Other payments</h4>
+            <?php
+              $level3 = (isset($feesToPay['level3']) && count($feesToPay['level3']) >= 1) ? $feesToPay['level3'] : [];
+            
+              if (count($level3) < 1){
+                echo "<i>No payments to show here</i>";
+               }
+               for ($i=0; $i < count($level3); $i++): 
+                //if not already paid for or priority has_paid(ref)
+               ?>
+               <div class="col-3">
+                    <div class="item-container">
+                        <div class="item ">
+                            <i class="bi bi-credit-card"></i>
+                            <p class="text"><?php echo array_values($level3[$i])[0]['session'].'<br>'.array_values($level3[$i])[0]['reason'];?></p>
+                            <small class="price">&#8358;<?php echo array_values($level3[$i])[0]['amount'];?></small>
+                            <button>Add</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">hostel fee</p>
-                    <p class="price">N20,000</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">faculty due</p>
-                    <p class="price">N2,00</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">departmental Registration</p>
-                    <p class="price">N45,00</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">GST charges</p>
-                    <p class="price">N45,200</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">ESP charges</p>
-                    <p class="price">N20,500</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">Portal Charges</p>
-                    <p class="price">2,200</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">Turn-it-in fee</p>
-                    <p class="price">45,200</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">ID Card Replacement</p>
-                    <p class="price">45,200</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">Hostel Fee</p>
-                    <p class="price">45,200</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">Libary Fee</p>
-                    <p class="price">45,200</p>
-                    <button>Add</button>
-                </div>
-                <div class="item ">
-                    <i class="bi bi-credit-card"></i>
-                    <p class="text">Portal Fee</p>
-                    <p class="price">45,200</p>
-                    <button>Add</button>
-                </div>
-            </div>
+                
+            <?php  endfor;?>
+            
+
         </div>
+    <!-- Level 2 payments ends here-->
 </div>
     <!-- Vendor JS Files -->
     <script src="<?php echo get_template_directory_uri();?>/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Template Main JS File -->
     <script src="<?php echo get_template_directory_uri();?>/assets/js/main.js"></script>
+    <script>
+        function addToTable(data){
+            console.log(data);
+        }
+    </script>
 </body>
 
 </html>
