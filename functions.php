@@ -237,7 +237,7 @@ function voctech_add_feesdues(){
 
 	// FORM VALIDATION ENDS
 	$feesduesData = array(
-		'ref' => rand()+rand()+rand()+5,
+		'ref' => rand(1,999)+rand(1000,9999)+rand(10000,99999)+5,
 		'collector' => get_current_user_id(),
 		'session_' => $formData['session'],
 		'amount' => $formData['amount'],
@@ -353,7 +353,7 @@ function voctech_get_feesdues($data = []){
 	}
 
 }
-
+voctech_add_table_fees_dues();
 function voctech_add_table_fees_dues(){
 	// table: fees_dues
 	global $wpdb;
@@ -362,7 +362,7 @@ function voctech_add_table_fees_dues(){
 
 	$sql = "CREATE TABLE {$table_name} (
 	    id int(10) NOT NULL AUTO_INCREMENT,
-	    ref int(10) NOT NULL,
+	    ref int(10) NOT NULL UNIQUE,
 	    collector varchar(255) NOT NULL,
 	    session_ varchar(255) NOT NULL,
 	    amount varchar(255) NOT NULL,
@@ -395,6 +395,8 @@ function voctech_check_condition($studentDetails, $feesDuesData){
 		'level3' => []
 	];
 
+	$allPayments = [];
+
 	foreach($feesDuesData as $indx => $fdd){
 		// if($fdd->priority_ === '0' || $fdd->priority_ === '0' ) continue;
 		
@@ -408,7 +410,8 @@ function voctech_check_condition($studentDetails, $feesDuesData){
 		){
 			// found a condition that mateches that payment
 			array_push($feesToPay['level'.$fdd->priority_], [
-				$fdd->session_reason_amount => [
+				$fdd->ref => [
+				'sra'=>$fdd->session_reason_amount,
 				'ref'=>$fdd->ref,
 				'collector'=>$fdd->collector,
 				'session'=>$fdd->session_,
@@ -418,10 +421,24 @@ function voctech_check_condition($studentDetails, $feesDuesData){
 				'status_'=>$fdd->status_,
 				'priority_'=>$fdd->priority_
 			]]);
+
+			// all payments
+			$allPayments[$fdd->ref] = [
+				'sra'=>$fdd->session_reason_amount,
+				'ref'=>$fdd->ref,
+				'collector'=>$fdd->collector,
+				'session'=>$fdd->session_,
+				'amount'=>$fdd->amount,
+				'reason'=>$fdd->reason,
+				'comment'=>$fdd->comment,
+				'status_'=>$fdd->status_,
+				'priority_'=>$fdd->priority_
+			];
+			
 		}
 	}
 
-	return $feesToPay;
+	return [$feesToPay, $allPayments];
 	
   }
 
@@ -434,322 +451,6 @@ function voctech_already_registered_user(){
 }
 
 
-
-
-
-
-// REQUEST SERVICE/JOB
-add_action('wp_ajax_quotation-request','voctech_quotation_request');
-// add_action('wp_ajax_nopriv_register-collector','voctech_quotation_request');
-function voctech_quotation_request(){
-	// Submit quotation request
-
-	$formData = [];
-	wp_parse_str($_POST['quotation-request'], $formData);
-	$errors = [];
-
-	// FORM VALIDATION STARTS
-	
-	if(!isset($formData['title']) || strlen($formData['title']) <= 1){
-		$errors[] = 'Service title cannot be empty';
-	}
-
-	if(!isset($formData['service_type']) || strlen($formData['service_type']) <= 1){
-		$errors[] = 'Service type cannot be empty. You may select "other" if not in drop down';
-	}
-
-	if(!isset($formData['service_sub_type']) || strlen($formData['service_sub_type']) <= 1){
-		$errors[] = 'Service sub-type cannot be empty. You may select "other" if not in drop down';
-	}
-
-
-	if(count($errors) >= 1){
-		return wp_send_json_error($errors);
-	}
-	// FORM VALIDATION ENDS
-
-	$quotationData = array(
-		'title'=>$formData['title'],
-		'request_id'=>rand()+rand()+rand()+3,
-		'category'=>$formData['service_type'],
-		'sub_category'=>$formData['service_sub_type'],
-		'description'=>$formData['comment'],
-		'last_description'=>$formData['comment'],
-		'status'=>'pending',
-		'collector_id'=>get_current_user_id()
-	);
-
-
-	try{
-		global $wpdb;
-		$table = $wpdb->prefix.'quotation_request';
-		$format = array('%s','%d');
-		// $my_id = $wpdb->insert_id;
-
-		// On success.
-		if ( $wpdb->insert($table,$quotationData,$format) ) {
-		    wp_send_json_success('Quotation request submitted successfully. We are currently reviewing and will get back to you');
-		}else{
-		    wp_send_json_error(['Unable to submit quotation request. Try again']);
-		}
-	}catch(Exception $e){
-		wp_send_json_error($e);
-	}
-}
-
-// ACCEPT/REJECT ARTISAN REGISTRATION
-add_action('wp_ajax_manage-artisan','voctech_manage_artisan_registration');
-function voctech_manage_artisan_registration(){
-	// admin accept/decline/ban artisan registration using the following:
-        // 0 - registered
-        // 1 - verified email
-        // 2 - Approved by admin
-        // 3 - Banned
-
-	$formData = $_POST['manage-artisan'];
-	// wp_parse_str($_POST['manage-artisan'], $formData);
-	$formData = json_decode(stripslashes($_POST['manage-artisan']));
-	$errors = [];
-
-	//check if its admin
-	$current_user   = wp_get_current_user();
-	$role_name      = $current_user->roles[0];
-
-	if($role_name !== 'administrator'){
-		$errors[] = 'Only an admin can perform this action. You are not an admin';
-	}
-
-	
-
-	// FORM VALIDATION STARTS
-	
-	if(!isset($formData->artisan_id)){
-		$errors[] = 'Cannot process request. Missing artisan ID';
-	}
-
-	if(!isset($formData->action)){
-		$errors[] = 'Action to take cannot be completed as action is empty';
-	}
-
-
-	if(count($errors) >= 1){
-		return wp_send_json_error($errors);
-	}
-	// FORM VALIDATION ENDS
-	$updated = update_user_meta( $formData->artisan_id, 'activited', $formData->action );
-
-		// So check and make sure the stored value matches $new_value.
-		if ( $formData->action != get_user_meta( $formData->artisan_id,  'activited', true ) ) {
-			$errors[] = 'Artisan not updated';
-			return wp_send_json_error($errors);
-		}
-		return wp_send_json_success('Artisan record updated successfully');
-	
-}
-
-// MANAGE QUOTATION REQUEST
-add_action('wp_ajax_manage-quotation','voctech_manage_quotation');
-function voctech_manage_quotation(){
-	// 'pending
-    // 'rejected
-    // 'processing
-    // 'done
-	// $formData = $_POST['manage-quotation'];
-	$formData = json_decode(stripslashes($_POST['manage-quotation']));
-	$errors = [];
-
-	//check if its admin
-	$current_user   = wp_get_current_user();
-	$role_name      = $current_user->roles[0];
-	
-	if($role_name !== 'administrator'){
-		$errors[] = 'Only an admin can perform this action. You are not an admin';
-	}
-
-	// FORM VALIDATION STARTS	
-	if(!isset($formData->quotationID)){
-		$errors[] = 'Cannot process request. Missing quotation ID';
-	}
-
-	if(!isset($formData->action)){
-		$errors[] = 'Action to take cannot be completed as action is empty';
-	}
-
-	if(!isset($formData->action) && $formData->action === 'rejected' && !isset($formData->comment)){
-		$errors[] = 'Must have a comment section';
-	}
-
-
-	if(count($errors) >= 1){
-		return wp_send_json_error($errors);
-	}
-
-
-	$quotationData = array(
-		'comment'=>htmlspecialchars($formData->comment),
-		'status_changed_by'=>$current_user->ID,
-		'status'=>$formData->action
-	);
-
-	$quotationData = (!isset($formData->artisan)) ? $quotationData : array(
-		'status_changed_by'=>$current_user->ID,
-		'artisan_id'=>$formData->artisan,
-		'status'=>$formData->action,
-		'comment'=>$formData->comment,
-		
-	);
-
-	try{
-		global $wpdb;
-		$table = $wpdb->prefix.'quotation_request';
-
-		// On success.
-		if ($wpdb->update($table,$quotationData,['request_id'=>$formData->quotationID]) ) {
-		    wp_send_json_success('Action completed successfully');
-		}else{
-		    wp_send_json_error(['Unable to complete request. Try again']);
-		}
-	}catch(Exception $e){
-		wp_send_json_error($e);
-	}
-	
-}
-
-
-// MANAGE JOBS INSERT/UPDATE
-add_action('wp_ajax_manage-jobs','voctech_manage_jobs');
-function voctech_manage_jobs(){
-	$formData = json_decode(stripslashes($_POST['manage-jobs']));
-	$errors = [];
-
-	//check if its admin
-	$current_user   = wp_get_current_user();
-	$role_name      = $current_user->roles[0];
-	
-	if($role_name !== 'administrator'){
-		$errors[] = 'Only an admin can perform this action. You are not an admin';
-	}
-
-	// FORM VALIDATION STARTS	
-	if(!isset($formData->quotationID)){
-		$errors[] = 'Cannot process request. Missing quotation ID';
-	}
-
-	if(!isset($formData->items) || gettype($formData->items) !== 'array'){
-		$errors[] = 'Action to take cannot be completed as items is empty';
-	}
-
-	if(!isset($formData->other_expenses)){
-		$errors[] = 'Action to take cannot be completed as other expenses is empty';
-	}
-
-	if(!isset($formData->completion_days)){
-		$errors[] = 'Action to take cannot be completed as completion days is empty';
-	}
-
-	if(!isset($formData->total)){
-		$errors[] = 'Action to take cannot be completed as total field is empty';
-	}
-	
-
-	if(count($errors) >= 1){
-		return wp_send_json_error($errors);
-	}
-
-
-	$jobData = array(
-		'request_id' => $formData->quotationID,
-		'status' => 'Awaiting confirmation',
-		'items' => serialize($formData->items),
-		'other_expenses' => $formData->other_expenses,
-		'completion_days' => $formData->completion_days,
-		'total_amount' => $formData->total,
-		'artisan_id' => $current_user->ID
-	);
-		// return wp_send_json_error($jobData);
-
-	try{
-		global $wpdb;
-		$table = $wpdb->prefix.'jobs';
-		$format = array('%s','%d');
-
-
-		// On success.
-		if ( $wpdb->insert($table,$jobData,$format) ) {
-		    return wp_send_json_success('Invoice has been sent to client');
-		}else{
-		    return wp_send_json_error(['Unable to submit invoice. Try again']);
-		}
-
-	}catch(Exception $e){
-		return wp_send_json_error($e);
-	}
-	
-}
-
-// get categories and sub-categories
-function voctech_get_categories(){
-	$args = [
-		'numberposts'=>10,
-		'order'=> 'DESC',
-		'post_type'=>'artisan-category'
-	];
-
-	$categories = [];
-	$postslist = get_posts( $args );
-	foreach ($postslist as $indx=>$post){
-		$categories = get_post_meta( $post->ID);
-		if(isset($categories['_edit_lock'])) unset($categories['_edit_lock']);
-		if(isset($categories['_edit_last'])) unset($categories['_edit_last']);
-	}
-	return (count($categories) > 0) ? $categories : [];
-}
-
-
-//GET quotation request and job
-function voctech_get_quotation_and_jobs($requestID, $whatToSearch){
-	global $wpdb;
-	$table = ($whatToSearch === 'quotation_request') ? $wpdb->prefix.'quotation_request' : $wpdb->prefix.'jobs';
-	$qry = "SELECT * FROM $table WHERE request_id ='".$requestID."' ORDER BY id DESC LIMIT 1";
-
-	try{
-		$results = $wpdb->get_results($qry);
-		if ($wpdb->last_error) {
-		    return $wpdb->last_error;
-		}else{
-		    return (isset($results)) ? $results : [];
-		}
-	}catch(Exception $e){
-		return $e;
-	}
-
-}
-
-//GET invoice
-function voctech_get_quotation_invoice($data = []){
-	// Submit quotation request
-	global $wpdb;
-	$table = $wpdb->prefix.'quotation_request';
-		
-
-	$collector_id = (isset($data['collector_id'])) ? htmlentities($data['collector_id']) : get_current_user_id();
-	$query = (isset($data['request_id'])) 
-	  ? "SELECT * FROM $table WHERE collector_id = '$collector_id' AND request_id = '".$data['request_id']."' AND status='processed';" 
-	  : "SELECT * FROM $table WHERE collector_id = '$collector_id' AND status='processed'";
-
-	try{
-		$results = $wpdb->get_results($query);
-		if ($wpdb->last_error) {
-		    return $wpdb->last_error;
-		    // return 'Could not fetch data';
-		}else{
-		    return (isset($results)) ? $results : [];
-		}
-	}catch(Exception $e){
-		return $e;
-	}
-
-}
 
 
 // LOGIN USER
