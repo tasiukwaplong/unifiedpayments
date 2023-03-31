@@ -35,6 +35,12 @@ Template Name: Student dashboard
 
     <!-- Template Main CSS File -->
     <link href="<?php echo get_template_directory_uri();?>/assets/css/style.css" rel="stylesheet" />
+    <style>
+        .btn-group-vertical>.btn:not(:first-child),
+.btn-group-vertical>.btn-group:not(:first-child) {
+margin-top: 0;
+}
+    </style>
 </head>
 </head>
 

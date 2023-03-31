@@ -74,7 +74,8 @@
     <p class="h5 float-left">
     Total: &#8358;<span id="total"><?php echo $total; ?></span> 
         <input type="hidden" value="<?php echo $total; ?>" id="total-inp">
-        <button style="float:right;margin-right:12px;padding-top:5px;" onClick="initiatePayment()" class="btn btn-success">Pay now <i class="bi bi-credit-card"></i></button>
+        <button onclick="initiatePayment()" type="button" style="float:right;margin-right:12px;padding-top:5px;" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Pay now <i class="bi bi-credit-card"></i></button>
+        <!-- <button  onClick="initiatePayment()" class="btn btn-success"></button> -->
     </p>
         <hr>
     </div>
@@ -135,11 +136,112 @@
                 </div>
                 
             <?php  endfor;?>
+
             
 
         </div>
-    <!-- Level 2 payments ends here-->
-</div>
+        <!-- Level 2 payments ends here-->
+        <!-- Button trigger modal -->
+        
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            
+            <div class="modal-body">
+            <section class="" style="
+    background-image: url(https://mdbcdn.b-cdn.net/img/Photos/Others/background3.webp);
+  ">
+  <div class="row d-flex justify-content-center">
+    <div class="col-md-12 col-lg-12 col-xl-12">
+      <div class="card rounded-3">
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <small><small>RRR:</small></small>
+            <?php 
+              $rrr = rand(1111,8888).'-'.rand(5555,9999).'-'.rand(3333,6666);
+              echo "<h3>$rrr</h3>";
+              echo "<input type='hidden' value='$rrr' id='rrr'>";
+            ?>
+            
+            <h6>&#8358;<span id="total2">56,000</span> | <?php echo $current_user->user_email ?? '';?></h6>
+          </div>
+          <form action="">
+            <p class="fw-bold mb-4 pb-2">Saved cards:</p>
+
+            <div class="d-flex flex-row align-items-center mb-4 pb-1">
+              <img class="img-fluid" src="https://img.icons8.com/color/48/000000/mastercard-logo.png" />
+              <div class="flex-fill mx-3">
+                <div class="form-outline">  
+                <input type="text" id="formControlLgXc" class="form-control form-control-lg"
+                    value="**** **** **** 3193" />
+                  <label class="form-label" for="formControlLgXc">Card Number</label>
+                </div>
+              </div>
+              <input type="radio" name="card" class="mb-3 border border-dark" checked >
+            </div>
+
+            <div class="d-flex flex-row align-items-center mb-4 pb-1">
+              <img class="img-fluid" src="https://img.icons8.com/color/48/000000/visa.png" />
+              <div class="flex-fill mx-3">
+                <div class="form-outline">
+                  <input type="text" id="formControlLgXs" class="form-control form-control-lg"
+                    value="**** **** **** 4296" />
+                  <label class="form-label" for="formControlLgXs">Card Number</label>
+                </div>
+              </div>
+              <input type="radio" name="card" class="mb-3 border border-dark"  >
+            </div>
+
+            <p class="fw-bold mb-4"><input type="radio" name="card" class="mb-3 border border-dark" >&nbsp;&nbsp;&nbsp;Add new card:</p>
+            
+
+            <div class="form-outline mb-4">
+              <input type="text" id="formControlLgXsd" class="form-control form-control-lg"
+                value="Anna Doe" />
+              <label class="form-label" for="formControlLgXsd">Cardholder's Name</label>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-7">
+                <div class="form-outline">
+                  <input type="text" id="formControlLgXM" class="form-control form-control-lg"
+                    value="1234 5678 1234 5678" />
+                  <label class="form-label" for="formControlLgXM">Card Number</label>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="form-outline">
+                  <input type="password" id="formControlLgExpk" class="form-control form-control-lg"
+                    placeholder="MM/YYYY" />
+                  <label class="form-label" for="formControlLgExpk">Expire</label>
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="form-outline">
+                  <input type="password" id="formControlLgcvv" class="form-control form-control-lg"
+                    placeholder="Cvv" />
+                  <label class="form-label" for="formControlLgcvv">Cvv</label>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-success btn-lg btn-block">Pay now<i class='bx bx-card'></i></button>
+            <a href="https://remita.net" target="_blank" style="float:right" class="btn btn-warning btn-lg btn-block">Pay on Remita<i class=' bx bx-arrow-left'></i></a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+            </div>
+           
+            </div>
+        </div>
+        </div>
+    </div>
+
+
     <!-- Vendor JS Files -->
     <script src="<?php echo get_template_directory_uri();?>/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Template Main JS File -->  
@@ -180,6 +282,8 @@
             total += Number(allInvoices[selectedRef].amount)
             document.getElementById('total').innerHTML = total
             document.getElementById('total-inp').value = total
+            document.getElementById('total2').innerHTML = total
+
             // // Loop through the JSON data and create a new row for each item
             for (var i = 0; i < selectedInvoice .length; i++) {
             var row = table.insertRow(-1);
@@ -193,6 +297,7 @@
                 }
             }
             }
+            document.getElementById('all-invoices').value = JSON.stringify(selectedInvoices)
 
         }
 
@@ -209,17 +314,20 @@
             total -= selectedInvoices[ref].amount
             document.getElementById('total').innerHTML = total
             document.getElementById('total-inp').value = total
+            document.getElementById('total2').innerHTML = total
             
             
             delete selectedInvoices[ref]
             document.getElementById('tr'+ref).remove()
+
+            // document.getElementById('all-invoices').value = JSON.stringify(selectedInvoices)
         
         }
 
         function initiatePayment(){
             // initiate payment
-            document.write(JSON.stringify(selectedInvoices))
-            document.write(total)
+            // document.getElementById('all-invoices').value = JSON.stringify(selectedInvoices)
+            document.getElementById('total2').innerHTML = total
         }
 </script> 
 </body>
