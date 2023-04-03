@@ -53,6 +53,7 @@ function voctech_update_custom_roles() {
         add_role( 'collector', 'Collector', array( 'read' => true, 'level_0' => true ) );
         add_role( 'student', 'Student', array( 'read' => true, 'level_0' => true ) );
 		voctech_add_table_fees_dues();
+		voctech_add_table_payment_history();
         update_option( 'custom_roles_version', 1 );
     }
 	
@@ -442,6 +443,92 @@ function voctech_check_condition($studentDetails, $feesDuesData){
 	
   }
 
+
+// STUDENT MAKE PAYMENT
+add_action('wp_ajax_make-payment','voctech_make_payment');
+function voctech_make_payment(){
+	$formData = [];
+	wp_parse_str($_POST['make-payment'], $formData);
+	$errors = [];
+	// FORM VALIDATION STARTS
+	$data = json_decode(stripslashes($_POST['make-payment']))->selectedInvoices ?? [];
+	$total = json_decode(stripslashes($_POST['make-payment']))->total ?? false;
+	$rrr = json_decode(stripslashes($_POST['make-payment']))->rrr ?? 'null';
+	// return wp_send_json_error(json_decode($data)->selectedInvoices);
+
+
+	if(gettype($data) !== 'object' || false === $total){
+		$errors[] = 'There was an error processing your payment request';
+	}
+
+	if($total <= 100){
+		$errors[] = 'Cannot process payment less than NGN 101';
+	}
+
+	if(count($errors) >= 1){
+		return wp_send_json_error($errors);
+	}
+	// return wp_send_json_error([get_object_vars($data)]);
+	$counter = 1;
+
+	foreach($data as $ref => $payment){
+		// credit all collectors
+		
+		if(voctech_credit_collector($payment->collector, $amount)){
+			voctech_add_payment_history([
+				'student_id' => get_current_user_id(),
+				'ref' => $payment->ref,
+				'collector_id' => $payment->collector,
+				'session_' => $payment->session,
+				'amount' => $payment->amount,
+				'rrr' => $rrr,
+				'reason' => $payment->reason,
+				'vat' => ($payment->amount*0.013),
+				'method_of_payment' => 'card',
+				'iterator_' => $counter++,
+				'status_' => '1',
+				'priority_' => $payment->priority_
+			]);
+		}
+	}
+	
+	return wp_send_json_success('Payment successful.');
+}
+
+//credit the collector
+function voctech_credit_collector($collectorId, $amount){
+	
+	try{
+		global $wpdb;
+		$table = $wpdb->prefix.'payment_history';
+		$collectorBalance = get_user_meta($collectorId);
+		
+		if(!isset($collectorBalance['balance'])) return false;
+		$newCollectorBalance = $collectorBalance['balance'][0] + $amount;
+		
+		// On success.
+		$updated = update_user_meta($collectorId, 'balance', $newCollectorBalance);
+
+		return ($newCollectorBalance >= $collectorBalance['balance'][0]);
+	}catch(Exception $e){
+		return false;
+	}
+}
+
+function voctech_add_payment_history($data){
+	// add to db
+	try{
+		global $wpdb;
+		$table = $wpdb->prefix.'payment_history';
+		$format = array('%s','%d');
+
+		// On success.
+		$wpdb->insert($table,$data,$format);
+	}catch(Exception $e){
+		//log $e - silently fail
+	}
+}
+
 // ====================
 
 add_action('wp_ajax_register','voctech_already_registered_user');
@@ -451,7 +538,35 @@ function voctech_already_registered_user(){
 }
 
 
+function voctech_add_table_payment_history(){
+	// table: fees_dues
+	global $wpdb;
+    $table_name = $wpdb->prefix . 'payment_history';
+    $wpdb_collate = $wpdb->collate;
 
+	$sql = "CREATE TABLE {$table_name} (
+		id int(10) NOT NULL AUTO_INCREMENT,
+		student_id int(10) NOT NULL,
+		ref int(10) NOT NULL UNIQUE,
+		collector_id varchar(255) NOT NULL,
+		session_ varchar(255) NOT NULL,
+		amount varchar(255) NOT NULL,
+		rrr varchar(30) NOT NULL,
+		reason varchar(255) NOT NULL,
+		vat varchar(255) NOT NULL,
+		method_of_payment varchar(255) NOT NULL,
+		iterator_ varchar(10) DEFAULT '0',
+		status_ varchar(10) DEFAULT '0',
+		priority_ varchar(10) DEFAULT '0',
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		PRIMARY KEY  (id)
+	)
+	COLLATE {$wpdb_collate}";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta( $sql );
+}
 
 // LOGIN USER
 add_action('wp_ajax_login','voctech_login_user');

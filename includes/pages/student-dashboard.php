@@ -33,6 +33,15 @@
         <br>
         <br>
         <hr>
+         <!-- message starts -->
+         <div class="text-center alert alert-danger " style="display: none;" id="err-container">
+                        <p id="err-msg"></p>
+                </div>
+
+                <div class="text-center alert alert-success" style="display: none;" id="success-container">
+                  <p id="suc-msg"></p>      
+                </div>
+                <!-- message ends -->
         <h4 class="mb-4">Payments to make</h4>
         <div class="table-responsive text-sm bg-dark p-2 text-dark bg-opacity-10">
           <table class="table table-sm text-sm table-sm" id="invoicesTbl">
@@ -74,7 +83,7 @@
     <p class="h5 float-left">
     Total: &#8358;<span id="total"><?php echo $total; ?></span> 
         <input type="hidden" value="<?php echo $total; ?>" id="total-inp">
-        <button onclick="initiatePayment()" type="button" style="float:right;margin-right:12px;padding-top:5px;" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Pay now <i class="bi bi-credit-card"></i></button>
+        <button onclick="initiatePayment()" type="button" style="float:right;margin-right:12px;padding-top:5px;" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Continue <i class="bi bi-arrow-right"></i></button>
         <!-- <button  onClick="initiatePayment()" class="btn btn-success"></button> -->
     </p>
         <hr>
@@ -130,7 +139,7 @@
                             <p class="text"><?php echo array_values($level3[$i])[0]['session'].'<br>'.array_values($level3[$i])[0]['reason'];?></p>
                             <small class="price">&#8358;<?php echo array_values($level3[$i])[0]['amount'];?></small>
                             <em>REF: <?php echo array_values($level3[$i])[0]['ref'];?>-<?php echo array_values($level3[$i])[0]['collector'];?></em>
-                            <button id="<?php echo array_values($level3[$i])[0]['ref'];?>btn" class="btn btn-success" onclick="addToTable(`<?php echo array_values($level3[$i])[0]['ref'];?>`)">Add</button>
+                            <button type="button" id="<?php echo array_values($level3[$i])[0]['ref'];?>btn" class="btn btn-success" onclick="addToTable(`<?php echo array_values($level3[$i])[0]['ref'];?>`)">Add</button>
                         </div>
                     </div>
                 </div>
@@ -145,101 +154,91 @@
         
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+          <div class="modal-dialog" role="document">
             <div class="modal-content">
-            
-            <div class="modal-body">
-            <section class="" style="
-    background-image: url(https://mdbcdn.b-cdn.net/img/Photos/Others/background3.webp);
-  ">
-  <div class="row d-flex justify-content-center">
-    <div class="col-md-12 col-lg-12 col-xl-12">
-      <div class="card rounded-3">
-        <div class="card-body p-4">
-          <div class="text-center mb-4">
-            <small><small>RRR:</small></small>
-            <?php 
-              $rrr = rand(1111,8888).'-'.rand(5555,9999).'-'.rand(3333,6666);
-              echo "<h3>$rrr</h3>";
-              echo "<input type='hidden' value='$rrr' id='rrr'>";
-            ?>
-            
-            <h6>&#8358;<span id="total2">56,000</span> | <?php echo $current_user->user_email ?? '';?></h6>
+              <div class="modal-body">
+                <section class="" style="background-image: url(https://mdbcdn.b-cdn.net/img/Photos/Others/background3.webp);">
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-12 col-lg-12 col-xl-12">
+                      <div class="card rounded-3">
+                        <div class="card-body p-4">
+                          
+                          <div class="text-center mb-4">
+                            <small><small>RRR:</small></small>
+                            <?php 
+                              $rrr = rand(1111,8888).'-'.rand(5555,9999).'-'.rand(3333,6666);
+                              echo "<h3>$rrr</h3>";
+                              echo "<input type='hidden' value='$rrr' id='rrr'>";
+                            ?>
+                            <h6>&#8358;<span id="total2">56,000</span> | <?php echo $current_user->user_email ?? '';?></h6>
+                          </div>
+
+                          <form action="">
+                            <p class="fw-bold mb-4 pb-2">Saved cards:</p>
+                            <div class="d-flex flex-row align-items-center mb-4 pb-1">
+                              <img class="img-fluid" src="https://img.icons8.com/color/48/000000/mastercard-logo.png" />
+                              <div class="flex-fill mx-3">
+                                <div class="form-outline">  
+                                  <input type="text" id="formControlLgXc" class="form-control form-control-lg" value="**** **** **** 3193" />
+                                  <label class="form-label" for="formControlLgXc">Card Number</label>
+                                </div>
+                              </div>
+                              <input type="radio" name="card" class="mb-3 border border-dark" checked >
+                            </div>
+                            
+                            <div class="d-flex flex-row align-items-center mb-4 pb-1">
+                              <img class="img-fluid" src="https://img.icons8.com/color/48/000000/visa.png" />
+                              <div class="flex-fill mx-3">
+                                <div class="form-outline">
+                                  <input type="text" id="formControlLgXs" class="form-control form-control-lg" value="**** **** **** 4296" />
+                                  <label class="form-label" for="formControlLgXs">Card Number</label>
+                                </div>
+                              </div>
+                              <input type="radio" name="card" class="mb-3 border border-dark"  >
+                            </div>
+                            
+                            <p class="fw-bold mb-4"><input type="radio" name="card" class="mb-3 border border-dark" >&nbsp;&nbsp;&nbsp;Add new card:</p>
+                            <div class="form-outline mb-4">
+                              <input type="text" id="formControlLgXsd" class="form-control form-control-lg" value="Anna Doe" />
+                              <label class="form-label" for="formControlLgXsd">Cardholder's Name</label>
+                            </div>
+                            
+                            <div class="row mb-4">
+                              <div class="col-7">
+                                <div class="form-outline">
+                                  <input type="text" id="formControlLgXM" class="form-control form-control-lg" value="1234 5678 1234 5678" />
+                                  <label class="form-label" for="formControlLgXM">Card Number</label>
+                                </div>
+                              </div>
+                              <div class="col-3">
+                                <div class="form-outline">
+                                  <input type="text" id="formControlLgExpk" class="form-control form-control-lg" placeholder="MM/YYYY" />
+                                  <label class="form-label" for="formControlLgExpk">Expire</label>
+                                </div>
+                              </div>
+                              <div class="col-2">
+                                <div class="form-outline">
+                                  <input type="password" id="formControlLgcvv" class="form-control form-control-lg"
+                                    placeholder="Cvv" />
+                                  <label class="form-label" for="formControlLgcvv">Cvv</label>
+                                </div>
+                              </div>
+                            </div>
+                            
+        <!-- <button onclick="initiatePayment()" type="button" style="float:right;margin-right:12px;padding-top:5px;" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Continue <i class="bi bi-arrow-right"></i></button> -->
+                            <button data-toggle="modal" data-target="#exampleModal" type="button" onclick="payNow()" class="btn btn-success btn-lg btn-block">Pay now <i class="bi bi-credit-card"></i></button>
+                            <a href="https://remita.net" target="_blank" style="float:right" class="btn btn-warning btn-lg btn-block">Pay on Remita <i class='bi bi-globe'></i></a>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
           </div>
-          <form action="">
-            <p class="fw-bold mb-4 pb-2">Saved cards:</p>
-
-            <div class="d-flex flex-row align-items-center mb-4 pb-1">
-              <img class="img-fluid" src="https://img.icons8.com/color/48/000000/mastercard-logo.png" />
-              <div class="flex-fill mx-3">
-                <div class="form-outline">  
-                <input type="text" id="formControlLgXc" class="form-control form-control-lg"
-                    value="**** **** **** 3193" />
-                  <label class="form-label" for="formControlLgXc">Card Number</label>
-                </div>
-              </div>
-              <input type="radio" name="card" class="mb-3 border border-dark" checked >
-            </div>
-
-            <div class="d-flex flex-row align-items-center mb-4 pb-1">
-              <img class="img-fluid" src="https://img.icons8.com/color/48/000000/visa.png" />
-              <div class="flex-fill mx-3">
-                <div class="form-outline">
-                  <input type="text" id="formControlLgXs" class="form-control form-control-lg"
-                    value="**** **** **** 4296" />
-                  <label class="form-label" for="formControlLgXs">Card Number</label>
-                </div>
-              </div>
-              <input type="radio" name="card" class="mb-3 border border-dark"  >
-            </div>
-
-            <p class="fw-bold mb-4"><input type="radio" name="card" class="mb-3 border border-dark" >&nbsp;&nbsp;&nbsp;Add new card:</p>
-            
-
-            <div class="form-outline mb-4">
-              <input type="text" id="formControlLgXsd" class="form-control form-control-lg"
-                value="Anna Doe" />
-              <label class="form-label" for="formControlLgXsd">Cardholder's Name</label>
-            </div>
-
-            <div class="row mb-4">
-              <div class="col-7">
-                <div class="form-outline">
-                  <input type="text" id="formControlLgXM" class="form-control form-control-lg"
-                    value="1234 5678 1234 5678" />
-                  <label class="form-label" for="formControlLgXM">Card Number</label>
-                </div>
-              </div>
-              <div class="col-3">
-                <div class="form-outline">
-                  <input type="password" id="formControlLgExpk" class="form-control form-control-lg"
-                    placeholder="MM/YYYY" />
-                  <label class="form-label" for="formControlLgExpk">Expire</label>
-                </div>
-              </div>
-              <div class="col-2">
-                <div class="form-outline">
-                  <input type="password" id="formControlLgcvv" class="form-control form-control-lg"
-                    placeholder="Cvv" />
-                  <label class="form-label" for="formControlLgcvv">Cvv</label>
-                </div>
-              </div>
-            </div>
-
-            <button class="btn btn-success btn-lg btn-block">Pay now<i class='bx bx-card'></i></button>
-            <a href="https://remita.net" target="_blank" style="float:right" class="btn btn-warning btn-lg btn-block">Pay on Remita<i class=' bx bx-arrow-left'></i></a>
-          </form>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-            </div>
-           
-            </div>
-        </div>
-        </div>
-    </div>
 
 
     <!-- Vendor JS Files -->
@@ -264,7 +263,7 @@
             window.onbeforeunload = function(e) {
                 return 'Reloading can discard unsaved changes. Sure to continue?';
             };
-            
+
             document.getElementById(selectedRef).style.opacity = '0.4'
             document.getElementById(selectedRef+'btn').style.display = 'none'
 
@@ -297,7 +296,8 @@
                 }
             }
             }
-            document.getElementById('all-invoices').value = JSON.stringify(selectedInvoices)
+
+            // document.getElementById('all-invoices').value = JSON.stringify(selectedInvoices)
 
         }
 
@@ -328,6 +328,54 @@
             // initiate payment
             // document.getElementById('all-invoices').value = JSON.stringify(selectedInvoices)
             document.getElementById('total2').innerHTML = total
+        }
+
+        function payNow(){
+          window.onbeforeunload = function () {
+            // blank function do nothing
+          }
+            // console.log(selectedInvoices, total)
+            var endpoint = '<?php echo admin_url('admin-ajax.php'); ?>';
+            var rrr = document.getElementById('rrr').value;
+            var payData = {selectedInvoices,total, rrr};
+            var payDataStringed = JSON.stringify(payData)
+            var formData = new FormData;
+            formData.append('action', 'make-payment');
+            formData.append('make-payment', payDataStringed);
+
+            $.ajax(endpoint, {
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+
+                success: function(res){
+                    scrollTo(0,0)
+                    if(res.success === true){
+                        $('#err-container').hide();
+                        $('#success-container').show();
+                        $('#suc-msg').html(res.data)
+                        setTimeout(function() {
+                            location.reload();
+                        }, 6500);
+
+                        // $('#payment-').hide();
+                        // $('#exampleModal').modal('toggle');
+                    }else{
+                        // console.log(res)
+                        // $('#exampleModal').modal('toggle');
+                        $('#err-container').show();
+                        $('#err-msg').html(res.data.join('<br>') || 'Unable to proces request')
+                    }
+                },
+                
+                error: function(err){
+                    scrollTo(0,0)
+                    // $('#exampleModal').modal('toggle');
+                    $('#err-container').show();
+                    $('#err-msg').html('Server error. Try again')
+                }
+            })
         }
 </script> 
 </body>
