@@ -18,7 +18,14 @@
         $allPaymets = voctech_check_condition($studentDetails, $feesDuesData)[1];
         $total = 0;
         // TO_DO
+        $myPayments = voctech_get_payment_history(['student_id'=>get_current_user_id()]);
+        $totalPaidAlready = 0;
         $alreadyPaid = [];
+        foreach($myPayments as $payment){
+          $totalPaidAlready += $payment->amount;
+          $alreadyPaid[$payment->ref] = true;
+        }
+        // print_r($alreadyPaid);
         // die();
 ?> 
 <div class="payment d-flex flex-column gap-5 col-9">
@@ -28,6 +35,16 @@
         </div>
         <div class="text-center">
             Level: <b><?php echo $userMeta['level'][0];?></b>&nbsp;&nbsp;|&nbsp;Faculty: <b><?php echo $userMeta['faculty'][0];?></b>&nbsp;&nbsp;|&nbsp;Faith: <b><?php echo $userMeta['faith'][0];?></b>&nbsp;&nbsp;|&nbsp;Gender: <b><?php echo $userMeta['gender'][0];?></b>&nbsp;&nbsp;|&nbsp;State/LGA: <b><?php echo $userMeta['state'][0];?>/<?php echo $userMeta['lga'][0];?></b>
+
+            <div class="row">
+              <div class="col border">
+                Total amount paid: 
+                <p class="h1">&#8358;<?php echo $totalPaidAlready;?></p>
+              </div>
+              <div class="col h1 border ">
+              <a class="btn btn-success mt-3 btn-lg" href="<?php echo esc_url( add_query_arg( 'p', 'payment-history' ) );?>">Payment history</a>
+              </div>
+            </div>
         </div>
         <br>
         <br>
@@ -64,8 +81,8 @@
                   }
                   $count = 0;
                   for ($i=0; $i < count($level1); $i++): 
+                    if(!isset($alreadyPaid[array_values($level1[$i])[0]['ref']])):  
                     $total += array_values($level1[$i])[0]['amount'];
-                    
                     //if not already paid for or priority_
                   ?>
                     <tr>
@@ -75,7 +92,7 @@
                         <td><?php echo array_values($level1[$i])[0]['ref'];?></td>
                         <th title="remove"><i class='btn btn-danger bx bx-minus'></i></th>
                     </tr>
-                <?php endfor;?>
+                <?php endif; endfor;?>
 
             </tbody>
         </table>
@@ -83,7 +100,7 @@
     <p class="h5 float-left">
     Total: &#8358;<span id="total"><?php echo $total; ?></span> 
         <input type="hidden" value="<?php echo $total; ?>" id="total-inp">
-        <button onclick="initiatePayment()" type="button" style="float:right;margin-right:12px;padding-top:5px;" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Continue <i class="bi bi-arrow-right"></i></button>
+        <button id="continueBtn" onclick="initiatePayment()" type="button" style="float:right;margin-right:12px;padding-top:5px;display:none;" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Continue <i class="bi bi-arrow-right"></i></button>
         <!-- <button  onClick="initiatePayment()" class="btn btn-success"></button> -->
     </p>
         <hr>
@@ -99,22 +116,35 @@
                 echo "<i>No payments to show here</i>";
                }
                for ($i=0; $i < count($level2); $i++): 
+                
+                if(isset($alreadyPaid[array_values($level2[$i])[0]['ref']])){
+                  echo '<div class="col-3" style="opacity: 0.4;">';
+                }else{
+                  echo '<div class="col-3" id="'.array_values($level2[$i])[0]['ref'].'">';
+                }
+
                 //if not already paid for or priority has_paid(ref)
                ?>
-               <div class="col-3" id="<?php echo array_values($level2[$i])[0]['ref'];?>">
                     <div class="item-container">
                         <div class="item ">
                             <i class="bi bi-credit-card"></i>
                             <p class="text"><?php echo array_values($level2[$i])[0]['session'].'<br>'.array_values($level2[$i])[0]['reason'];?></p>
                             <small class="price">&#8358;<?php echo array_values($level2[$i])[0]['amount'];?></small>
                             <em>REF: <?php echo array_values($level2[$i])[0]['ref'];?>-<?php echo array_values($level2[$i])[0]['collector'];?></em>
+                            
+                            <?php
+                               if(isset($alreadyPaid[array_values($level2[$i])[0]['ref']])){
+                                echo '<button class="btn btn-dark btn-sm"><small>Paid</small></button>';
+                               }else{
+                                echo '<button id="'.array_values($level2[$i])[0]['ref'].'btn" class="btn btn-success btn-sm" onclick="addToTable(`'.array_values($level2[$i])[0]['ref'].'`)">Add</button>';
+                              }
+                            ?>
 
-                            <button id="<?php echo array_values($level2[$i])[0]['ref'];?>btn" class="btn btn-success" onclick="addToTable(`<?php echo array_values($level2[$i])[0]['ref'];?>`)">Add</button>
                         </div>
                     </div>
                 </div>
                 
-            <?php  endfor;?>
+            <?php endfor;?>
             
 
         </div>
@@ -131,15 +161,28 @@
                }
                for ($i=0; $i < count($level3); $i++): 
                 //if not already paid for or priority has_paid(ref)
+                if(isset($alreadyPaid[array_values($level3[$i])[0]['ref']])){
+                  echo '<div class="col-3" style="opacity: 0.4;">';
+                }else{
+                  echo '<div class="col-3" id="'.array_values($level3[$i])[0]['ref'].'">';
+                }
+
                ?>
-               <div class="col-3" id="<?php echo array_values($level3[$i])[0]['ref'];?>">
+
                     <div class="item-container">
                         <div class="item ">
                             <i class="bi bi-credit-card"></i>
                             <p class="text"><?php echo array_values($level3[$i])[0]['session'].'<br>'.array_values($level3[$i])[0]['reason'];?></p>
                             <small class="price">&#8358;<?php echo array_values($level3[$i])[0]['amount'];?></small>
                             <em>REF: <?php echo array_values($level3[$i])[0]['ref'];?>-<?php echo array_values($level3[$i])[0]['collector'];?></em>
-                            <button type="button" id="<?php echo array_values($level3[$i])[0]['ref'];?>btn" class="btn btn-success" onclick="addToTable(`<?php echo array_values($level3[$i])[0]['ref'];?>`)">Add</button>
+                            <?php
+                               if(isset($alreadyPaid[array_values($level3[$i])[0]['ref']])){
+                                echo '<button class="btn btn-dark btn-sm"><small>Paid</small></button>';
+                               }else{
+                                echo '<button id="'.array_values($level3[$i])[0]['ref'].'btn" class="btn btn-success btn-sm" onclick="addToTable(`'.array_values($level2[$i])[0]['ref'].'`)">Add</button>';
+                              }
+                            ?>
+
                         </div>
                     </div>
                 </div>
@@ -252,6 +295,10 @@
         var allInvoices = <?php print_r(json_encode($allPaymets));?>;
         var selectedInvoices = <?php print_r(json_encode($level1)); ?>[0];
         var total = Number(document.getElementById('total-inp').value);
+
+        if(total > 0){
+          document.getElementById('continueBtn').style.display = 'block'
+        }
 
         function addToTable(selectedRef){
             if(allInvoices[selectedRef] === undefined) return alert('Error: Cannot add. Unidentified reference')

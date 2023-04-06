@@ -37,10 +37,12 @@ Template Name: Student dashboard
     <link href="<?php echo get_template_directory_uri();?>/assets/css/style.css" rel="stylesheet" />
     <style>
         .btn-group-vertical>.btn:not(:first-child),
-.btn-group-vertical>.btn-group:not(:first-child) {
-margin-top: 0;
-}
+        .btn-group-vertical>.btn-group:not(:first-child) {
+            margin-top: 0;
+        }
     </style>
+   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
 </head>
 </head>
 
@@ -75,8 +77,9 @@ margin-top: 0;
             </div>
             <div class="dashboard-links">
                 <li><a class=" text-decoration-none" href="/student-dashboard">Dashboard</a></li>
-                <li><a class=" text-decoration-none" href="">Manage Payments</a></li>
-                <li><a class=" text-decoration-none" href="">Settings</a></li>
+                <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'payment-history' ) );?>">Payment history</a></li>
+                <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'complain' ) );?>">Complains</a></li>
+                <li><a class=" text-decoration-none" href="/logout" title='Settings' class='text-dark'>Logout</a></li>
             </div>
         </div>
         <?php

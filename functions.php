@@ -408,6 +408,7 @@ function voctech_check_condition($studentDetails, $feesDuesData){
 			isset($studentDetails[$fdd->condition3]) ||
 			isset($studentDetails[$fdd->condition4]) ||
 			isset($studentDetails[$fdd->condition5])) 
+			// ($fdd->ref.'-'.$studentDetails !== $paymentHistory['ref'].'-'.$paymentHistory['student_id'])
 		){
 			// found a condition that mateches that payment
 			array_push($feesToPay['level'.$fdd->priority_], [
@@ -526,6 +527,37 @@ function voctech_add_payment_history($data){
 		$wpdb->insert($table,$data,$format);
 	}catch(Exception $e){
 		//log $e - silently fail
+	}
+}
+
+
+function voctech_get_payment_history($data){
+	// fetch payment history (s)
+	// options: is_admin, student_id, collector_id, id (history_id)
+	$collector_id = (isset($data['collector_id'])) ? htmlentities($data['collector_id']) : get_current_user_id();
+	$student_id = (isset($data['student_id'])) ? htmlentities($data['student_id']) : get_current_user_id();
+
+	try{
+		global $wpdb;
+		$table = $wpdb->prefix.'payment_history';
+		
+		$qry = (isset($data['student_id'])) 
+		  ? "SELECT * FROM $table WHERE student_id = $student_id"
+		  : "SELECT * FROM $table WHERE collector_id = $collector_id";
+
+		$qry = (isset($data['is_admin'])) ? "SELECT * FROM $table " : $qry;
+		$qry .= (isset($data['id'])) ? "WHERE id = '".$data['id']."'" : '';
+		$qry .= " ORDER BY id DESC";
+		
+		$results = $wpdb->get_results($qry);
+		if ($wpdb->last_error) {
+		    // return $wpdb->last_error;
+		    return 'Could not fetch data';
+		}else{
+		    return (isset($results)) ? $results : [];
+		}
+	}catch(Exception $e){
+		return $e;
 	}
 }
 
