@@ -1,6 +1,6 @@
 <section class="container-fluid">
         <div class="row">
-            <div class="col-md-12 bg-light p-4 border">
+            <div class="col-md-12 bg-light border">
                 <div class="alert alert-danger " style="display: none;" id="err-container">
                     <p id="err-msg"></p>
                 </div>
@@ -10,28 +10,21 @@
                 </div>
 
                 <?php if(!is_user_logged_in()):?>
-                <form class="row" id="user-login">
+                <form class="text-center" id="user-login">
                     <div class="col-md-12">
                         <h2 class="text-center">LOG IN TO DASHBOARD</h2>
                     </div>
-                    <div class="col-md-12">
-                        <input placeholder="Enter email/username/matric" type="text" name="email" class="form-control m-2" minlength="5" maxlength="40" required>
+                    <div class="">
+                        <input placeholder="Enter email/username/matric" type="text" name="email" class="form-control" minlength="5" maxlength="40" required>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="">
                         <input placeholder="Enter password" type="password" name="password1" class="form-control m-2" minlength="3" maxlength="10" required>
                     </div>
 
-                    <div class="col-md-12">
-                        <div class="form-check m-2">
-                            <!-- <input class="form-check-input" type="checkbox" name="remember_me" id="flexCheckDefault"> -->
-                            <!-- <label class="form-check-label" for="flexCheckDefault">Remember me</label> -->
-                        </div>
-                    </div>
-
-                    <div class="col-md-12">
-                        <input type="submit" id="btn-register" value="Log in" class="form-control btn btn-warning m-2">
-                        <input type="button" id="btn-processing" value="Loggin in..." class="form-control btn btn-warning m-2 " style="display: none;">
+                    <div class="">
+                        <input type="submit" id="btn-register" value="Log in" class="form-control btn btn-warning ">
+                        <input type="button" id="btn-processing" value="Loggin in..." class="form-control btn btn-warning  " style="display: none;">
                     </div>
                     
                 </form>

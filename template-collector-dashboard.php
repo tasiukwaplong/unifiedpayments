@@ -35,6 +35,7 @@ Template Name: Administrator dashboard
 
     <!-- Template Main CSS File -->
     <link href="<?php echo get_template_directory_uri();?>/assets/css/style.css" rel="stylesheet" />
+    
 </head>
 </head>
 
@@ -64,7 +65,7 @@ Template Name: Administrator dashboard
                     <div class="fw-bold">
                         <?php echo $current_user->user_email ?? '';?>
                     </div>
-                    <div><?php echo $role_name ?? '';?></div>
+                    <div><?php echo $role_name ?? '';?> | FUL/CL/<?php echo $current_user->ID ?? '';?></div>
                 </div>
             </div>
             <div class="dashboard-links">

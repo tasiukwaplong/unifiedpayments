@@ -1,51 +1,63 @@
 <?php
-$conditions = '
-        <option value="">NO CONDITION</option>
-        <option disabled="disabled">LEVEL</option>
+$condition1 = '<option value="">--SELECT LEVEL--</option>
         <option value="level__100" title="Only 100 level should pay">100 level</option>
         <option value="level__200" title="Only 200 level should pay">200 level</option>
         <option value="level__300" title="Only 300 level should pay">300 level</option>
         <option value="level__400" title="Only 400 level should pay">400 level</option>
         <option value="level__500" title="Only 500 level should pay">500 level</option>
         <option value="level__600" title="Only 600 level should pay">600 level</option>
-        <option value="level__700" title="Only 700 level should pay">700 level</option>
-        <option value="level__all" title="all levels">All levels</option>
-
-        <option disabled="disabled">&nbsp;</option>
-        <option disabled="disabled">FACULTY</option>
-        <option value="faculty__computing" title="Only Faculty of computing">Faculty of computing</option>
-        <option value="faculty__science" title="Only Faculty of science">Faculty of science</option>
-        <option value="faculty__arts" title="Only Faculty of arts">Faculty of arts</option>
-        <option value="faculty__education" title="Only Faculty of education">Faculty of education</option>
-        <option value="faculty__all" title="All Faculties">All faculties</option>
-
-        <option disabled="disabled">&nbsp;</option>
-        <option disabled="disabled">GENDER</option>
+        <option value="level__700" title="Only 700 level should pay">700 level</option>';
+$condition2 = '
+        <option value="">--SELECT GENDER--</option>
         <option value="gender__Male" title="Only gender of Male">Gender of Male</option>
-        <option value="gender__Female" title="Only gender of Female">Gender of Female</option>
-        <option value="gender__all" title="All genders">All genders</option>
-
-
-        <option disabled="disabled">&nbsp;</option>
-        <option disabled="disabled">STATE OF ORIGIN</option>
+        <option value="gender__Female" title="Only gender of Female">Gender of Female</option>';
+$condition3 = '
+        <option value="">--SELECT STATE OF ORIGIN--</option>
         <option value="state__Abia" title="Only indigenes of Abia should be affected">Abia state</option>
+        <option value="state__Adamawa" title="Only indigenes of Adamawa should be affected">Adamawa state</option>
+        <option value="state__Akwa Ibom" title="Only indigenes of Akwa should be affected">Akwa state</option>
+        <option value="state__Anambra" title="Only indigenes of Anambra should be affected">Anambra state</option>
+        <option value="state__Bauchi" title="Only indigenes of Bauchi should be affected">Bauchi state</option>
+        <option value="state__Bayelsa" title="Only indigenes of Bayelsa should be affected">Bayelsa state</option>
+        <option value="state__Benue" title="Only indigenes of Benue should be affected">Benue state</option>
+        <option value="state__Borno" title="Only indigenes of Borno should be affected">Borno state</option>
+        <option value="state__Cross River" title="Only indigenes of Cross should be affected">Cross state</option>
+        <option value="state__Delta" title="Only indigenes of Delta should be affected">Delta state</option>
+        <option value="state__Ebonyi" title="Only indigenes of Ebonyi should be affected">Ebonyi state</option>
+        <option value="state__Edo" title="Only indigenes of Edo should be affected">Edo state</option>
+        <option value="state__Ekiti" title="Only indigenes of Ekiti should be affected">Ekiti state</option>
+        <option value="state__Enugu" title="Only indigenes of Enugu should be affected">Enugu state</option>
+        <option value="state__Gombe" title="Only indigenes of Gombe should be affected">Gombe state</option>
+        <option value="state__Imo" title="Only indigenes of Imo should be affected">Imo state</option>
+        <option value="state__Jigawa" title="Only indigenes of Jigawa should be affected">Jigawa state</option>
+        <option value="state__Kaduna" title="Only indigenes of Kaduna should be affected">Kaduna state</option>
+        <option value="state__Kano" title="Only indigenes of Kano should be affected">Kano state</option>
+        <option value="state__Katsina" title="Only indigenes of Katsina should be affected">Katsina state</option>
+        <option value="state__Kebbi" title="Only indigenes of Kebbi should be affected">Kebbi state</option>
+        <option value="state__Kogi" title="Only indigenes of Kogi should be affected">Kogi state</option>
+        <option value="state__Kwara" title="Only indigenes of Kwara should be affected">Kwara state</option>
+        <option value="state__Lagos" title="Only indigenes of Lagos should be affected">Lagos state</option>
         <option value="state__Nasarawa" title="Only indigenes of Nasarawa should be affected">Nasarawa state</option>
+        <option value="state__Niger" title="Only indigenes of Niger should be affected">Niger state</option>
+        <option value="state__Ogun" title="Only indigenes of Ogun should be affected">Ogun state</option>
+        <option value="state__Ondo" title="Only indigenes of Ondo should be affected">Ondo state</option>
+        <option value="state__Osun" title="Only indigenes of Osun should be affected">Osun state</option>
+        <option value="state__Oyo" title="Only indigenes of Oyo should be affected">Oyo state</option>
         <option value="state__Plateau" title="Only indigenes of Plateau should be affected">Plateau state</option>
-        <option value="state__FCT" title="Only indigenes of FCT should be affected">FCT</option>
-        <option value="state__all" title="All states">All states</option>
-
-        <option disabled="disabled">&nbsp;</option>
-        <option disabled="disabled">DEPARTMENT</option>
+        <option value="state__Rivers" title="Only indigenes of Rivers should be affected">Rivers state</option>
+        <option value="state__Sokoto" title="Only indigenes of Sokoto should be affected">Sokoto state</option>
+        <option value="state__Taraba" title="Only indigenes of Taraba should be affected">Taraba state</option>
+        <option value="state__Yobe" title="Only indigenes of Yobe should be affected">Yobe state</option>
+        <option value="state__Zamfara" title="Only indigenes of Zamfara should be affected">Zamfara state</option>';
+$condition4 = '
+        <option value="">--SELECT DEPARTMENT--</option>
         <option value="department__Computer_science" title="Only computer science">Computer science</option>
         <option value="department__Information_system" title="Only Information system">Information system</option>
-        <option value="department__Biochemistry" title="Only Biochemistry">Biochemistry</option>
-        <option value="department__all" title="All departments">All departments</option>
-
-        <option disabled="disabled">&nbsp;</option>
-        <option disabled="disabled">FAITH</option>
+        <option value="department__Biochemistry" title="Only Biochemistry">Biochemistry</option>';
+$condition5 = '
+        <option value="">--SELECT FAITH--</option>
         <option value="faith__Islam" title="Only faith of Islam">Islam</option>
-        <option value="faith__Christianity" title="Only faith of Christianity">Christianity</option>
-        <option value="faith__all" title="All faiths">All faiths</option>';
+        <option value="faith__Christianity" title="Only faith of Christianity">Christianity</option>';
         
        $current_user = wp_get_current_user();
        $role_name      = $current_user->roles[0];
@@ -96,31 +108,31 @@ $conditions = '
 
             <label class="mt-2" for="condition1" title="Condition 1 for this payment" >Condition 1</label>
             <select name="condition1" id="condition1" class="form-control">
-                    <?php echo $conditions; ?>
+                    <?php echo $condition1; ?>
             </select>
 
 
             <label class="mt-2" for="condition2" title="Condition 2 for this payment" >Condition 2</label>
             <select name="condition2" id="condition2" class="form-control">
-                    <?php echo $conditions; ?>
+                    <?php echo $condition2; ?>
             </select>
 
 
             <label class="mt-2" for="condition3" title="Condition 3 for this payment" >Condition 3</label>
             <select name="condition3" id="condition3" class="form-control">
-                    <?php echo $conditions; ?>
+                    <?php echo $condition3; ?>
             </select>
 
 
             <label class="mt-2" for="condition4" title="Condition 4 for this payment" >Condition 4</label>
             <select name="condition4" id="condition4" class="form-control">
-                    <?php echo $conditions; ?>
+                    <?php echo $condition4; ?>
             </select>
 
 
             <label class="mt-2" for="condition5" title="Condition 5 for this payment" >Condition 5</label>
             <select name="condition5" id="condition5" class="form-control" >
-                    <?php echo $conditions; ?>
+                    <?php echo $condition5; ?>
             </select>
 
 

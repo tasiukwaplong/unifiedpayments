@@ -354,7 +354,7 @@ function voctech_get_feesdues($data = []){
 	}
 
 }
-voctech_add_table_fees_dues();
+// voctech_add_table_fees_dues();
 function voctech_add_table_fees_dues(){
 	// table: fees_dues
 	global $wpdb;
@@ -445,7 +445,7 @@ function voctech_check_condition($studentDetails, $feesDuesData){
   }
 
 
-// STUDENT MAKE PAYMENT
+// STUDENT MAKES PAYMENT
 add_action('wp_ajax_make-payment','voctech_make_payment');
 function voctech_make_payment(){
 	$formData = [];
@@ -475,7 +475,7 @@ function voctech_make_payment(){
 	foreach($data as $ref => $payment){
 		// credit all collectors
 		
-		if(voctech_credit_collector($payment->collector, $amount)){
+		if(voctech_credit_collector($payment->collector, $payment->amount)){
 			voctech_add_payment_history([
 				'student_id' => get_current_user_id(),
 				'ref' => $payment->ref,
@@ -569,9 +569,9 @@ function voctech_already_registered_user(){
 	wp_send_json_error(['You are already registered. To register another account, you have to log out of your account '.$logoutUrl]);
 }
 
-
+// voctech_add_table_payment_history();
 function voctech_add_table_payment_history(){
-	// table: fees_dues
+	// table: payment_history
 	global $wpdb;
     $table_name = $wpdb->prefix . 'payment_history';
     $wpdb_collate = $wpdb->collate;

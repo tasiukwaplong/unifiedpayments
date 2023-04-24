@@ -27,7 +27,7 @@
             $prioritiesOptions = [
                 '1' => 'Level 1 (Compulsory)',
                 '2' => 'Level 2 (Optional)',
-                '3' => 'Level 3 (Others)',
+                // '3' => 'Level 3 (Others)',
                 '0' => 'Disable (Hidden)',
             ];
             // print_r($fetchFeesDuesData);
@@ -111,7 +111,7 @@
 
                             <option value="1"><?php echo $prioritiesOptions['1'];?></option>
                             <option value="2"><?php echo $prioritiesOptions['2'];?></option>
-                            <option value="3"><?php echo $prioritiesOptions['3'];?></option>
+                            
                             <option value="0"><?php echo $prioritiesOptions['0'];?></option>
                         </select>
                         <input type="hidden" name="id" value="<?php echo $id ?? '';?>">

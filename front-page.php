@@ -8,6 +8,9 @@
   <title></title>
   <meta content="" name="description" />
   <meta content="" name="keywords" />
+  <script>
+    window.location = '/sign-in'
+  </script>
 
   <!-- Favicons -->
   <link href="<?php echo get_template_directory_uri();?>/assets/img/favicon.png" rel="icon" />

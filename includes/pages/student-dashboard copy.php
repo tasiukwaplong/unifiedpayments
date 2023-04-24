@@ -19,7 +19,6 @@
         $total = 0;
         // TO_DO
         $myPayments = voctech_get_payment_history(['student_id'=>get_current_user_id()]);
-        $myPayments = (gettype($myPayments) !== 'string' && count($myPayments) >=1) ? $myPayments : [];
         $totalPaidAlready = 0;
         $alreadyPaid = [];
         foreach($myPayments as $payment){
@@ -109,7 +108,7 @@
 
     <!-- Level 2 payments -->
         <div class="payment-section row">
-            <h4 class="mb-4">Other payments</h4>
+            <h4 class="mb-4">Level 2 payments</h4>
             <?php
               $level2 = (isset($feesToPay['level2']) && count($feesToPay['level2']) >= 1) ? $feesToPay['level2'] : [];
             
@@ -151,6 +150,49 @@
         </div>
     <!-- Level 2 payments ends here-->
 
+    <!-- Level 3 payments -->
+    <div class="payment-section row">
+            <h4 class="mb-4">Other payments</h4>
+            <?php
+              $level3 = (isset($feesToPay['level3']) && count($feesToPay['level3']) >= 1) ? $feesToPay['level3'] : [];
+            
+              if (count($level3) < 1){
+                echo "<i>No payments to show here</i>";
+               }
+               for ($i=0; $i < count($level3); $i++): 
+                //if not already paid for or priority has_paid(ref)
+                if(isset($alreadyPaid[array_values($level3[$i])[0]['ref']])){
+                  echo '<div class="col-3" style="opacity: 0.4;">';
+                }else{
+                  echo '<div class="col-3" id="'.array_values($level3[$i])[0]['ref'].'">';
+                }
+
+               ?>
+
+                    <div class="item-container">
+                        <div class="item ">
+                            <i class="bi bi-credit-card"></i>
+                            <p class="text"><?php echo array_values($level3[$i])[0]['session'].'<br>'.array_values($level3[$i])[0]['reason'];?></p>
+                            <small class="price">&#8358;<?php echo array_values($level3[$i])[0]['amount'];?></small>
+                            <em>REF: <?php echo array_values($level3[$i])[0]['ref'];?>-<?php echo array_values($level3[$i])[0]['collector'];?></em>
+                            <?php
+                               if(isset($alreadyPaid[array_values($level3[$i])[0]['ref']])){
+                                echo '<button class="btn btn-dark btn-sm"><small>Paid</small></button>';
+                               }else{
+                                echo '<button id="'.array_values($level3[$i])[0]['ref'].'btn" class="btn btn-success btn-sm" onclick="addToTable(`'.array_values($level2[$i])[0]['ref'].'`)">Add</button>';
+                              }
+                            ?>
+
+                        </div>
+                    </div>
+                </div>
+                
+            <?php  endfor;?>
+
+            
+
+        </div>
+        <!-- Level 2 payments ends here-->
         <!-- Button trigger modal -->
         
         <!-- Modal -->
@@ -252,9 +294,11 @@
         var canClose = true;
         var allInvoices = <?php print_r(json_encode($allPaymets));?>;
         var selectedInvoices = <?php print_r(json_encode($level1)); ?>[0];
-        console.log(selectedInvoices);
         var total = Number(document.getElementById('total-inp').value);
 
+        if(total > 0){
+          document.getElementById('continueBtn').style.display = 'block'
+        }
 
         function addToTable(selectedRef){
             if(allInvoices[selectedRef] === undefined) return alert('Error: Cannot add. Unidentified reference')
@@ -300,13 +344,6 @@
             }
             }
 
-
-            if(total > 0){
-              document.getElementById('continueBtn').style.display = 'block'
-            }else{
-              document.getElementById('continueBtn').style.display = 'none'
-            }
-
             // document.getElementById('all-invoices').value = JSON.stringify(selectedInvoices)
 
         }
@@ -329,12 +366,6 @@
             
             delete selectedInvoices[ref]
             document.getElementById('tr'+ref).remove()
-
-            if(total > 0){
-              document.getElementById('continueBtn').style.display = 'block'
-            }else{
-              document.getElementById('continueBtn').style.display = 'none'
-            }
 
             // document.getElementById('all-invoices').value = JSON.stringify(selectedInvoices)
         

@@ -40,15 +40,10 @@ Template Name: Sign-in
     <div class="form">
       <div class="form-header">
         <img src="<?php echo get_template_directory_uri();?>/assets/img/portfolio/portfolio-2.jpg" alt="" />
-        <p><span>FMIS unitedPayments</span></p>
+        <p><span>FMIS</span></p>
       </div>
       <?php get_template_part('includes/login', 'user'); ?>
-      <p class="text">
-        <span>New Students </span> are to use their Jamb Registration Number
-        as the User ID
-        <span>Returning </span>
-        Students are to use their matriculation Number as the User ID
-      </p>
+      
     </div>
   </main>
 
