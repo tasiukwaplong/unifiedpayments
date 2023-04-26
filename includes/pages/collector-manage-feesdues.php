@@ -106,31 +106,31 @@ $condition5 = '
             <input name="reason" id="reason" type="text" placeholder="Enter reason" maxlength="200" class="form-control" required>
 
 
-            <label class="mt-2" for="condition1" title="Condition 1 for this payment" >Condition 1</label>
+            <label class="mt-2" for="condition1" title="Condition 1 for this payment" >Condition (by level)</label>
             <select name="condition1" id="condition1" class="form-control">
                     <?php echo $condition1; ?>
             </select>
 
 
-            <label class="mt-2" for="condition2" title="Condition 2 for this payment" >Condition 2</label>
+            <label class="mt-2" for="condition2" title="Condition 2 for this payment" >Condition (By Gender)</label>
             <select name="condition2" id="condition2" class="form-control">
                     <?php echo $condition2; ?>
             </select>
 
 
-            <label class="mt-2" for="condition3" title="Condition 3 for this payment" >Condition 3</label>
+            <label class="mt-2" for="condition3" title="Condition 3 for this payment" >Condition (state of origin)</label>
             <select name="condition3" id="condition3" class="form-control">
                     <?php echo $condition3; ?>
             </select>
 
 
-            <label class="mt-2" for="condition4" title="Condition 4 for this payment" >Condition 4</label>
+            <label class="mt-2" for="condition4" title="Condition 4 for this payment" >Condition (By Department)</label>
             <select name="condition4" id="condition4" class="form-control">
                     <?php echo $condition4; ?>
             </select>
 
 
-            <label class="mt-2" for="condition5" title="Condition 5 for this payment" >Condition 5</label>
+            <label class="mt-2" for="condition5" title="Condition 5 for this payment" >Condition (By Faith)</label>
             <select name="condition5" id="condition5" class="form-control" >
                     <?php echo $condition5; ?>
             </select>

@@ -1,3 +1,6 @@
+<?php
+  $allPayments = voctech_get_payment_history(['is_admin'=>true]);
+?>
 <div class="payment d-flex flex-column gap-5 col-9">
         <div class="activities row gap-5">
                 <div class="item col pt-2">
@@ -15,111 +18,67 @@
                 <div class="item col pt-2">
                     <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-feesdues' ) );?>" class="text-decoration-none btn border border-md shadow">
                         <i class="bx bx-money-withdraw"></i>
-                        <p>Manage Fees&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                        <p>Manage Fees<br></p>
                     </a>
                 </div>
                 <div class="item col pt-2">
-                <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-payments' ) );?>" class="text-decoration-none btn border border-md shadow">
+                <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-withdrawals' ) );?>" class="text-decoration-none btn border border-md shadow">
                         <i class="bx bx-wallet"></i>
-                        <p>Manage Payments</p>
+                        <p>Manage withdrawals</p>
                     </a>
                 </div>
             </div>
             <div class="record-table">
                 <h1 class="text-center">RECENT PAYMENTS</h1>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>payment for;</th>
-                            <th>RRR</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>undergratuate school charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="error">error</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
+                <div class="table-responsive text-sm bg-dark p-2 text-dark bg-opacity-10">
+                    <table class="table table-sm text-sm table-sm" id="myTable">
+                        <thead>
+                            <tr>
+                                <th>S/N</th>
+                                <th>Description</th>
+                                <th>Session</th>
+                                <th>Collector ID</th>
+                                <th>Student ID</th>
+                                <th>Amount</th>
+                                <th>Reference</th>
+                                <th>RRR</th>
+                                <th>Date</th>
+                                
+                            </tr>
+                        </thead>
 
-                        </tr>
+                        <tbody>
+                        <?php
+                        for ($i=0; $i < count($allPayments); $i++): 
+                        ?>
                         <tr>
-                            <td>GST Charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="succes">succes</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
+                            <td><?php echo $i + 1;?></td>
+                            <td><?php echo $allPayments[$i]->reason;?></td>
+                            <td><?php echo $allPayments[$i]->session_;?></td>
+                            <td>FUL/CL/<?php echo $allPayments[$i]->collector_id;?></td>
+                            <td>FUL/ST/<?php echo $allPayments[$i]->student_id;?></td>
+                            <td>&#8358;<?php echo $allPayments[$i]->amount;?></td>
+                            <td><?php echo $allPayments[$i]->ref;?></td>
+                            <td><?php echo $allPayments[$i]->rrr;?></td>
+                            <td><?php echo $allPayments[$i]->created_at;?></td>
+                            
+                    </tr>
+                <?php endfor;?>
 
-                        </tr>
-                        <tr>
-                            <td>ESP Charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="error">error</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
-
-                        </tr>
-                        <tr>
-                            <td>ID Card Replacement</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="succes">succes</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
-
-                        </tr>
-                        <tr>
-                            <td>Portal Charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="error">error</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
-
-                        </tr>
-                        <tr>
-                            <td>Hostel Fee</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="succes">succes</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
-
-                        </tr>
-                        <tr>
-                            <td>Departmental Registration Charges</td>
-                            <td>12345678</td>
-                            <td>30/12/2022</td>
-                            <td>45,000</td>
-                            <td>
-                                <div class="error">error</div>
-                            </td>
-                            <td><i class="bx bx-dots-vertical"></i></td>
-                        </tr>
-
-                    </tbody>
-                </table>
+            </tbody>
+        </table>
+    </div>
             </div>
         </div>
 </div>
+                            
+<script>
+      $(document).ready( function () {
+        $('#myTable').DataTable();
+        
+      } );
+    </script>
+
     <!-- Vendor JS Files -->
     <script src="<?php echo get_template_directory_uri();?>/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Template Main JS File -->

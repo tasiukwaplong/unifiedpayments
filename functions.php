@@ -54,6 +54,7 @@ function voctech_update_custom_roles() {
         add_role( 'student', 'Student', array( 'read' => true, 'level_0' => true ) );
 		voctech_add_table_fees_dues();
 		voctech_add_table_payment_history();
+		voctech_add_table_withdrawals();
         update_option( 'custom_roles_version', 1 );
     }
 	
@@ -269,6 +270,57 @@ function voctech_add_feesdues(){
 	}
 }
 
+// ADD WITHDWRWAL REQUESTS
+add_action('wp_ajax_add-withdrawal','voctech_add_withdrawal');
+function voctech_add_withdrawal(){
+	$formData = [];
+	wp_parse_str($_POST['add-withdrawal'], $formData);
+	$errors = [];
+
+	// FORM VALIDATION STARTS
+	if(!isset($formData['amount']) || strlen($formData['amount']) <= 1){
+		$errors[] = 'Amount is empty. Please provide a valid amount';
+	}
+	
+	if(!isset($formData['account_number']) || strlen($formData['account_number']) <= 1){
+		$errors[] = 'Account number is empty. Please provide a valid account number';
+	}
+	
+	if(!isset($formData['account_name']) || strlen($formData['account_name']) <= 1){
+		$errors[] = 'Account name is empty. Please provide a valid account name';
+	}
+	
+	if(!isset($formData['bank']) || strlen($formData['bank']) <= 1){
+		$errors[] = 'Bank name is empty. Please provide a valid bank';
+	}
+	
+
+	// FORM VALIDATION ENDS
+	$withdrawalData = array(
+		'collector_id'=>get_current_user_id(),
+		'amount' => $formData['amount'],
+		'account_number' => $formData['account_number'],
+		'account_name' => $formData['account_name'],
+		'bank' => $formData['bank'],
+		'comment' => $formData['comment'] ?? ''
+);
+
+	try{
+		global $wpdb;
+		$table = $wpdb->prefix.'withdrawals';
+		$format = array('%s','%d');
+
+		// On success.
+		if ( $wpdb->insert($table,$withdrawalData,$format) ) {
+		    wp_send_json_success('Request submitted succesfully. It will be reviewed by the bursary unit');
+		}else{
+		    wp_send_json_error(['Unable to add request. Possible duplicate record. Try again']);
+		}
+	}catch(Exception $e){
+		wp_send_json_error($e);
+	}
+}
+
 // UPDATE FEES OR DUES
 add_action('wp_ajax_update-feesdues','voctech_update_feesdues');
 function voctech_update_feesdues(){
@@ -354,6 +406,35 @@ function voctech_get_feesdues($data = []){
 	}
 
 }
+
+//GET LIST OF withdrawals
+function voctech_get_withdrawals($data = []){
+	// Submit fees/dues
+
+	$collector_id = (isset($data['collector_id'])) ? htmlentities($data['collector_id']) : get_current_user_id();
+
+	try{
+		global $wpdb;
+		$table = $wpdb->prefix.'withdrawals';
+		
+		$qry = "SELECT * FROM $table WHERE collector_id = $collector_id ";
+		$qry = (isset($data['is_admin'])) ? "SELECT * FROM $table " : $qry;
+		$qry .= (isset($data['id'])) ? "WHERE id = '".$data['id']."'" : '';
+		$qry .= " ORDER BY id DESC";
+		
+		$results = $wpdb->get_results($qry);
+		if ($wpdb->last_error) {
+		    // return $wpdb->last_error;
+		    return 'Could not fetch data';
+		}else{
+		    return (isset($results)) ? $results : [];
+		}
+	}catch(Exception $e){
+		return $e;
+	}
+
+}
+
 // voctech_add_table_fees_dues();
 function voctech_add_table_fees_dues(){
 	// table: fees_dues
@@ -458,9 +539,9 @@ function voctech_make_payment(){
 	// return wp_send_json_error(json_decode($data)->selectedInvoices);
 
 
-	if(gettype($data) !== 'object' || false === $total){
-		$errors[] = 'There was an error processing your payment request';
-	}
+	// if(gettype($data) !== 'object' || false === $total){
+	// 	$errors[] = 'There was an error processing your payment request'.gettype($data);
+	// }
 
 	if($total <= 100){
 		$errors[] = 'Cannot process payment less than NGN 101';
@@ -469,16 +550,19 @@ function voctech_make_payment(){
 	if(count($errors) >= 1){
 		return wp_send_json_error($errors);
 	}
-	// return wp_send_json_error([get_object_vars($data)]);
+	// return wp_send_json_error(implode(',',$data));
 	$counter = 1;
+	$data2 = [];
 
 	foreach($data as $ref => $payment){
 		// credit all collectors
-		
+		// array_values($level1[$i])[0]['amount'];
+		// $data2[] = gettype($payment);
 		if(voctech_credit_collector($payment->collector, $payment->amount)){
 			voctech_add_payment_history([
 				'student_id' => get_current_user_id(),
 				'ref' => $payment->ref,
+				'ref_id' => $payment->ref.get_current_user_id(),
 				'collector_id' => $payment->collector,
 				'session_' => $payment->session,
 				'amount' => $payment->amount,
@@ -492,6 +576,7 @@ function voctech_make_payment(){
 			]);
 		}
 	}
+	// return wp_send_json_error($data2);
 	
 	return wp_send_json_success('Payment successful.');
 }
@@ -579,7 +664,8 @@ function voctech_add_table_payment_history(){
 	$sql = "CREATE TABLE {$table_name} (
 		id int(10) NOT NULL AUTO_INCREMENT,
 		student_id int(10) NOT NULL,
-		ref int(10) NOT NULL UNIQUE,
+		ref int(10) NOT NULL,
+		ref_id int(10) NOT NULL UNIQUE,
 		collector_id varchar(255) NOT NULL,
 		session_ varchar(255) NOT NULL,
 		amount varchar(255) NOT NULL,
@@ -590,6 +676,32 @@ function voctech_add_table_payment_history(){
 		iterator_ varchar(10) DEFAULT '0',
 		status_ varchar(10) DEFAULT '0',
 		priority_ varchar(10) DEFAULT '0',
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		PRIMARY KEY  (id)
+	)
+	COLLATE {$wpdb_collate}";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta( $sql );
+}
+
+// voctech_add_table_withdrawals();
+function voctech_add_table_withdrawals(){
+	// table: withdrawals
+	global $wpdb;
+    $table_name = $wpdb->prefix . 'withdrawals';
+    $wpdb_collate = $wpdb->collate;
+
+	$sql = "CREATE TABLE {$table_name} (
+		id int(10) NOT NULL AUTO_INCREMENT,
+		collector_id int(10) NOT NULL,
+		amount int(10) NOT NULL,
+		bank varchar(100) NOT NULL,
+		account_number varchar(100) NOT NULL,
+		account_name varchar(100) NOT NULL,
+		comment varchar(100) NOT NULL,
+		status_ varchar(10) DEFAULT '0',
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 		PRIMARY KEY  (id)

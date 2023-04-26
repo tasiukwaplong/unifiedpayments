@@ -11,50 +11,21 @@
             <b><?php echo $current_user->display_name;?></b>
         </div>
     </div>
-        <div class="activities row gap-5 text-center">
-                <div class="item col pt-2 well well-sm " style="border-left: 10px solid green;">
-                    <div class="h3 p-5 pb-0">
-                        &#8358;<?php echo $userMeta['balance'][0];?>
-                    </div>
-                    <small class="small pt-0 mt-0">
-                        <em>Total money collected</em>
-                    </small>
-
-                </div>
-                <div class="item col pt-2">
-                    <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-feesdues' ) );?>" class="text-decoration-none btn border border-md shadow">
-                        <i class="bx bx-plus"></i>
-                        <p>Add fees/dues</p>
-                    </a>
-                </div>
-                <div class="item col p-2">
-                    
-                <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-payments' ) );?>" class="text-decoration-none btn border border-md shadow">
-                        <i class="bx bx-money"></i>
-                        <p>Manage Payments</p>
-                    </a>
-                </div>
-                <div class="item col pt-2">
-                    <a href="<?php echo esc_url( add_query_arg( 'p', 'manage-withdrawals' ) );?>" class="text-decoration-none btn border border-md shadow">
-                        <i class="bx bx-money-withdraw"></i>
-                        <p>Manage withdrawal</p>
-                    </a>
-                </div>
-            </div>
             <div class="record-table">
-                <h1 class="text-center">RECENT PAYMENTS</h1>
+                <h1 class="text-center">PAYMENTS COLLECTED</h1>
                 <div class="table-responsive text-sm bg-dark p-2 text-dark bg-opacity-10">
-                    <table class="table table-sm text-sm table-sm" id="invoicesTbl">
+                    <table class="table table-sm text-sm table-sm" id="myTable">
                         <thead>
                             <tr>
                                 <th>S/N</th>
                                 <th>Description</th>
+                                <th>Collector ID</th>
+                                <th>Student ID</th>
                                 <th>Session</th>
-                                <th>Fee</th>
+                                <th>Amount</th>
                                 <th>Reference</th>
                                 <th>RRR</th>
                                 <th>Date</th>
-                                <th></th>
                             </tr>
                         </thead>
 
@@ -65,12 +36,13 @@
                         <tr>
                             <td><?php echo $i + 1;?></td>
                             <td><?php echo $allPayments[$i]->reason;?></td>
+                            <td>FUL/CL/<?php echo $allPayments[$i]->collector_id;?></td>
+                            <td>FUL/ST/<?php echo $allPayments[$i]->student_id;?></td>
                             <td><?php echo $allPayments[$i]->session_;?></td>
-                            <td><?php echo $allPayments[$i]->amount;?></td>
+                            <td>&#8358;<?php echo $allPayments[$i]->amount;?></td>
                             <td><?php echo $allPayments[$i]->ref;?></td>
                             <td><?php echo $allPayments[$i]->rrr;?></td>
                             <td><?php echo $allPayments[$i]->created_at;?></td>
-                            <td><a href="#view" class="btn btn-primary">View more</a> </td>
                     </tr>
                 <?php endfor;?>
 
@@ -78,7 +50,12 @@
         </table>
         </div>
 </div>
-
+<script>
+      $(document).ready( function () {
+        $('#myTable').DataTable();
+        
+      } );
+    </script>
     <!-- Vendor JS Files -->
     <script src="<?php echo get_template_directory_uri();?>/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Template Main JS File -->

@@ -35,6 +35,9 @@ Template Name: Administrator dashboard
 
     <!-- Template Main CSS File -->
     <link href="<?php echo get_template_directory_uri();?>/assets/css/style.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
     
 </head>
 </head>
@@ -52,7 +55,7 @@ Template Name: Administrator dashboard
 
             </form>
             <div class="notify">
-                <a href="/logout" title='Settings' class='text-dark'><i class="bx bx-cog"></i></a>
+                <a href="#" title='Settings' class='text-dark'><i class="bx bx-cog"></i></a>
                 <a href="<?php echo wp_logout_url(home_url()) ?>" class='text-danger'><i class="bx bx-power-off"></i></a>
             </div>
         </div>
@@ -71,8 +74,9 @@ Template Name: Administrator dashboard
             <div class="dashboard-links">
                 <li><a class=" text-decoration-none" href="/collector-dashboard">Dashboard</a></li>
                 <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'manage-feesdues' ) );?>">Manage Fees/Dues</a></li>
-                <li><a class=" text-decoration-none" href="">Manage Payments</a></li>
-                <li><a class=" text-decoration-none" href="">Settings</a></li>
+                <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'manage-payments' ) );?>">Manage Payments</a></li>
+                <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'manage-withdrawals' ) );?>">Manage withdrawals</a></li>
+                <!-- <li><a class=" text-decoration-none" href="">Settings</a></li> -->
             </div>
         </div>
         <?php

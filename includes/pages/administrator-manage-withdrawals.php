@@ -1,56 +1,38 @@
 <div class="payment d-flex flex-column gap-5 col-9">
 <div class="table-responsive">
-    <div class="row">
-        <div class="col-md-12 text-center p-3">
-            <h4>Add new student(s)</h4>
-        </div>
-        <div class="col-md-6 p-5">
-            <br>
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModalCenter">
-                Add new student
-            </button>
-        </div>
-        <div class="col-md-6 p-5">
-            <input type="file" class="form-input border border-md">
-            <a href="" class="btn btn-success">Upload file</a> 
-            <small class="text-danger">* Upload .xls .csv only</small>
-        </div>
-        <div class="col-md-6"></div>
-    </div>
 
-    <table class="table area text-sm" id="students">
+    <table class="table area text-sm" id="myTable">
         <thead>
             <tr>
-                <th class="sp-admin" scope="col">S/N</th>
-                <th class="sp-admin" scope="col">Matric number</th>
-                <th class="sp-admin" scope="col">Full name</th>
-                <th class="sp-admin" scope="col">Email</th>
-                <th class="sp-admin" scope="col">Date created</th>
-                <th class="sp-admin" scope="col"></th>
+                    <th class="sp-admin" scope="col">S/N</th>
+                    <th class="sp-admin" scope="col">Date requested</th>
+                    <th class="sp-admin" scope="col">Amount</th>
+                    <th class="sp-admin" scope="col">Bank</th>
+                    <th class="sp-admin" scope="col">Account name</th>
+                    <th class="sp-admin" scope="col">Account number</th>
+                    <th class="sp-admin" scope="col">Comment</th>
             </tr>
         </thead>
-        <tbody>
-            <?php
-                $students = get_users(['role'=>'student']);
-                if(count($students)<=0):
-                    echo "<tr><td colspan='6'>NO student added yet</td></tr>";
-                else:
-                    foreach ($students as $indx => $student):
-                    $studentMeta = get_user_meta($student->ID);
-                ?>
-                    <tr>
-                        <td><?php echo ($indx+1);?></td>                        
-                        <td><?php echo $studentMeta['matric'][0]; ?></td>
-                        <td><?php echo $student->first_name; ?>&nbsp;<?php echo $student->last_name; ?></td>
-                        <td><?php echo $student->user_email; ?></td>
-                        <td><?php echo $student->user_registered; ?></td>
-                       
-                        <td class='btn border border-sm'>
-                            Edit|Delete
-                        </td>
-                    </tr>
-            <?php endforeach;endif;?>
-        </tbody>
+        <tbody style="cursor: pointer;">
+                <?php
+                    $feesdues = voctech_get_withdrawals(['is_admin'=>get_current_user_id()]);
+                    if(count($feesdues)<=0):
+                        echo "<tr><td colspan='8'>No record added yet</td></tr>";
+                    else:
+                        foreach ($feesdues as $indx => $fd): 
+                          $elemClass = ($fd->status_ === "0") ? "" : "";
+                    ?>
+                        <tr <?php echo $elemClass;?>  onclick="openFD(<?php print_r($fd->ref);?>)" title="Created on: <?php print_r($fd->created_at);?>, updated on: <?php print_r($fd->updated_at);?>">
+                            <td><?php print_r($indx+1);?></td>
+                            <td><?php print_r($fd->created_at);?></td>
+                            <td><?php print_r($fd->amount);?></td>
+                            <td><?php print_r($fd->bank);?></td>
+                            <td><?php print_r($fd->account_name);?></td>
+                            <td><?php print_r($fd->account_number);?></td>
+                            <td><?php print_r($fd->comment);?></td>
+                        </tr>
+                <?php endforeach;endif;?>
+            </tbody>
             </table>
                     </div>
 
@@ -185,45 +167,9 @@
 
 
 
-<script type="text/javascript">
-   
-   //register new collector
-$('#student-registration').submit(function(e){
-    // add a new user - role:collector
-    e.preventDefault();
-    var endpoint = '<?php echo admin_url('admin-ajax.php'); ?>';
-    var form = $('#student-registration').serialize();
-    var formData = new FormData;
-    formData.append('action', 'register-student');
-    formData.append('register-student', form);
-
-    $.ajax(endpoint, {
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-
-        success: function(res){
-            scrollTo(0,0)
-            if(res.success === true){
-                $('#err-container').hide();
-                $('#success-container').show();
-                setTimeout(function() {
-                    location.reload();
-                }, 1200);
-                $('#student-registration').hide();
-            }else{
-                // console.log(res)
-                $('#err-container').show();
-                $('#err-msg').html(res.data.join('<br>') || 'Unable to proces request')
-            }
-        },
+<script>
+      $(document).ready( function () {
+        $('#myTable').DataTable();
         
-        error: function(err){
-            scrollTo(0,0)
-            $('#err-container').show();
-            $('#err-msg').html('Server error. Try again')
-        }
-    })
-})
-</script>
+      } );
+    </script>

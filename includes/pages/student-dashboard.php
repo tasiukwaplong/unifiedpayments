@@ -7,7 +7,7 @@
        $studentDetails = [
         "state__".$userMeta['state'][0] => true,
         "lga__".$userMeta['lga'][0] => true,
-        "faculty__".$userMeta['faculty'][0] => true,
+        // "faculty__".$userMeta['faculty'][0] => true,
         "department__".$userMeta['department'][0] => true,
         "gender__".$userMeta['gender'][0] => true,
         "level__".$userMeta['level'][0] => true,
@@ -16,6 +16,7 @@
 
         $feesToPay = voctech_check_condition($studentDetails, $feesDuesData)[0];
         $allPaymets = voctech_check_condition($studentDetails, $feesDuesData)[1];
+        // print_r($allPaymets);
         $total = 0;
         // TO_DO
         $myPayments = voctech_get_payment_history(['student_id'=>get_current_user_id()]);
@@ -35,7 +36,7 @@
             <b><?php echo $current_user->display_name;?></b>
         </div>
         <div class="text-center">
-            Level: <b><?php echo $userMeta['level'][0];?></b>&nbsp;&nbsp;|&nbsp;Faculty: <b><?php echo $userMeta['faculty'][0];?></b>&nbsp;&nbsp;|&nbsp;Faith: <b><?php echo $userMeta['faith'][0];?></b>&nbsp;&nbsp;|&nbsp;Gender: <b><?php echo $userMeta['gender'][0];?></b>&nbsp;&nbsp;|&nbsp;State/LGA: <b><?php echo $userMeta['state'][0];?>/<?php echo $userMeta['lga'][0];?></b>
+            Level: <b><?php echo $userMeta['level'][0];?></b>&nbsp;&nbsp;|&nbsp;Department: <b><?php echo $userMeta['department'][0];?></b>&nbsp;&nbsp;|&nbsp;Faith: <b><?php echo $userMeta['faith'][0];?></b>&nbsp;&nbsp;|&nbsp;Gender: <b><?php echo $userMeta['gender'][0];?></b>&nbsp;&nbsp;|&nbsp;State: <b><?php echo $userMeta['state'][0];?></b>
 
             <div class="row">
               <div class="col border">
@@ -81,9 +82,12 @@
                     echo "<tr><td colspan='9' class='text-center'><i>No pending payments</i></td></tr>";
                   }
                   $count = 0;
+                  $level1_for_js = [];
+                  // print_r(json_encode($level1));
                   for ($i=0; $i < count($level1); $i++): 
                     if(!isset($alreadyPaid[array_values($level1[$i])[0]['ref']])):  
                     $total += array_values($level1[$i])[0]['amount'];
+                    $level1_for_js[] = $level1[$i];
                     //if not already paid for or priority_
                   ?>
                     <tr>
@@ -187,7 +191,7 @@
                               <input type="radio" name="card" class="mb-3 border border-dark" checked >
                             </div>
                             
-                            <div class="d-flex flex-row align-items-center mb-4 pb-1">
+                            <!--div class="d-flex flex-row align-items-center mb-4 pb-1">
                               <img class="img-fluid" src="https://img.icons8.com/color/48/000000/visa.png" />
                               <div class="flex-fill mx-3">
                                 <div class="form-outline">
@@ -196,7 +200,7 @@
                                 </div>
                               </div>
                               <input type="radio" name="card" class="mb-3 border border-dark"  >
-                            </div>
+                            </div-->
                             
                             <p class="fw-bold mb-4"><input type="radio" name="card" class="mb-3 border border-dark" >&nbsp;&nbsp;&nbsp;Add new card:</p>
                             <div class="form-outline mb-4">
@@ -251,9 +255,26 @@
         
         var canClose = true;
         var allInvoices = <?php print_r(json_encode($allPaymets));?>;
-        var selectedInvoices = <?php print_r(json_encode($level1)); ?>[0];
-        console.log(selectedInvoices);
+        var initialInvoices = <?php print_r(json_encode($level1_for_js)); ?>;
+        var newData = {}
+        console.log(typeof initialInvoices === 'object' && initialInvoices[0] !== undefined)
+        if(typeof initialInvoices === 'object' && initialInvoices[0] !== undefined){
+          for (let i = 0; i < initialInvoices.length; i++) {    
+            if(Object.keys(initialInvoices[i])[0] !== undefined && Object.values(initialInvoices[i])[0] !== undefined) {
+              newData[Object.keys(initialInvoices[i])[0]] = Object.values(initialInvoices[i])[0]
+            }
+          }
+        }
+
+        var selectedInvoices = newData
+
+
         var total = Number(document.getElementById('total-inp').value);
+        if(total > 0){
+              document.getElementById('continueBtn').style.display = 'block'
+        }else{
+              document.getElementById('continueBtn').style.display = 'none'
+        }
 
 
         function addToTable(selectedRef){
@@ -347,6 +368,8 @@
         }
 
         function payNow(){
+          // console.log({selectedInvoices,total, rrr})
+          // return
           window.onbeforeunload = function () {
             // blank function do nothing
           }

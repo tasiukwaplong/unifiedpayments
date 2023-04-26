@@ -59,7 +59,7 @@ Template Name: Student dashboard
 
             </form>
             <div class="notify">
-                <a href="/logout" title='Settings' class='text-dark'><i class="bx bx-cog"></i></a>
+                <a href="#settings" title='Settings' class='text-dark'><i class="bx bx-cog"></i></a>
                 <a href="<?php echo wp_logout_url(home_url()) ?>" class='text-danger'><i class="bx bx-power-off"></i></a>
             </div>
         </div>
@@ -79,7 +79,7 @@ Template Name: Student dashboard
                 <li><a class=" text-decoration-none" href="/student-dashboard">Dashboard</a></li>
                 <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'payment-history' ) );?>">Payment history</a></li>
                 <li><a class=" text-decoration-none" href="<?php echo esc_url( add_query_arg( 'p', 'complain' ) );?>">Complains</a></li>
-                <li><a class=" text-decoration-none" href="/logout" title='Settings' class='text-dark'>Logout</a></li>
+                <li><a class=" text-decoration-none" href="<?php echo wp_logout_url(home_url()) ?>" title='Settings' class='text-dark'>Logout</a></li>
             </div>
         </div>
         <?php
